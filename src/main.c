@@ -4,9 +4,15 @@
 int main(int argc, char *argv[]) {
   // Flush after every printf
   setbuf(stdout, NULL);
-
-  // TODO: Uncomment the code below to pass the first stage
   printf("$ ");
 
+  char userInput[30];
+  fgets(userInput, sizeof(userInput), stdin);
+  char nothing[1];
+  int cmp = strcmp(userInput,nothing);
+  if (cmp!=0){
+    printf("\n%s", userInput);
+  }
+  
   return 0;
 }
