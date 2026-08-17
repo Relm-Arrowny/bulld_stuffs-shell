@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
   fgets(userInput, sizeof(userInput), stdin);
   char nothing[1];
   int cmp = strcmp(userInput,nothing);
-  if (cmp!=0){
+  if (cmp<0){
     printf("\n%s: command not found", userInput);
   }
   
