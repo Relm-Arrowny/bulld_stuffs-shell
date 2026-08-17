@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
   char nothing[1];
   int cmp = strcmp(userInput,nothing);
   if (cmp!=0){
-    printf("\n%s", userInput);
+    printf("\n%s: command not found", userInput);
   }
   
   return 0;
