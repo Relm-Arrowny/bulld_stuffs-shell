@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
     userInput[strcspn(userInput, "\n")] = '\0';
     
     cmp = strcmp(userInput,nothing);
+    if (cmp<0)
     printf("%s: command not found\n", userInput);
 
     
