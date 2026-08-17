@@ -6,16 +6,18 @@ int main(int argc, char *argv[]) {
   //setbuf(stdout, NULL);
 
   char userInput[30];
-  char nothing[1];
-  while(1){
+  char nothing[5] = "exit";
+  int cmp = 1;
+  while(cmp){
     printf("$ ");
     fgets(userInput, sizeof(userInput), stdin);
     userInput[strcspn(userInput, "\n")] = '\0';
     
-    int cmp = strcmp(userInput,nothing);
-    if (cmp>0){
-      printf("%s: command not found\n", userInput);
-    }
+    cmp = strcmp(userInput,nothing);
+    printf("%s: command not found\n", userInput);
+
+    
   }
+
   return 0;
 }
