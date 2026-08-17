@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   char nothing[5] = "exit";
   int cmp = 1;
   while(cmp){
-    printf("$");
+    printf("$ ");
     fgets(userInput, sizeof(userInput), stdin);
     userInput[strcspn(userInput, "\n")] = '\0';
     
