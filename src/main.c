@@ -3,15 +3,16 @@
 #include <string.h>
 int main(int argc, char *argv[]) {
   // Flush after every printf
-  setbuf(stdout, NULL);
+  //setbuf(stdout, NULL);
   printf("$ ");
 
   char userInput[30];
   fgets(userInput, sizeof(userInput), stdin);
+  userInput[strcspn(userInput, "\n")] = '\0';
   char nothing[1];
   int cmp = strcmp(userInput,nothing);
-  if (cmp<0){
-    printf("\n%s: command not found", userInput);
+  if (cmp>0){
+    printf("%s: command not found\n", userInput);
   }
   
   return 0;
