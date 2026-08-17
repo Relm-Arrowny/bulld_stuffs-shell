@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
   char userInput[30];
   char nothing[5] = "exit";
   int cmp = 1;
-  while(cmp){
+  while(1){
     printf("$ ");
     fgets(userInput, sizeof(userInput), stdin);
     userInput[strcspn(userInput, "\n")] = '\0';
@@ -16,6 +16,8 @@ int main(int argc, char *argv[]) {
     cmp = strcmp(userInput,nothing);
     if (cmp<1)
       printf("%s: command not found\n", userInput);
+    else
+      break;
 
     
   }
