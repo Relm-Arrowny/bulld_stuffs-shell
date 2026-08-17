@@ -6,15 +6,15 @@ int main(int argc, char *argv[]) {
   //setbuf(stdout, NULL);
 
   char userInput[30];
-  char nothing[5] = "exit";
-  int cmp = 1;
+  char nothing[] = "exit";
   while(1){
     printf("$ ");
     fgets(userInput, sizeof(userInput), stdin);
     userInput[strcspn(userInput, "\n")] = '\0';
     
-    cmp = strcmp(userInput,nothing);
-    if (cmp<1)
+    int cmp = strcmp(userInput,nothing);
+    printf("%i",cmp);
+    if (cmp!=0)
       printf("%s: command not found\n", userInput);
     else
       break;
