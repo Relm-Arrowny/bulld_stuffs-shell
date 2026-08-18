@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "helper.h"
+
 int main(int argc, char *argv[]) {
   // Flush after every printf
   //setbuf(stdout, NULL);
 
-  char userInput[30];
+
+  char userInput[1024];
   while(1){
     printf("$ ");
     fgets(userInput, sizeof(userInput), stdin);
@@ -15,9 +18,15 @@ int main(int argc, char *argv[]) {
       break;
     else if (strncmp(userInput,"echo ",5 )== 0)
       printf("%s\n", userInput + 5);
+    else if (strncmp(userInput,"type ",5 )== 0)
+      if (checkType(userInput + 5)) 
+        printf("%s is a shell builtin\n", userInput+5);
+      else
+        noCommand (userInput+5);
     else
-      printf("%s: command not found\n", userInput);
+      noCommand (userInput);
   }
 
   return 0;
 }
+
