@@ -1,10 +1,13 @@
 
 #include "helper.h"
+char commands[] = "type echo exit";
 
 int checkType(char* input){
-    if (strncmp(input,"exit",5 )== 0) return 1;
-    else if (strncmp(input,"echo",5 )== 0) return 1;
-    else if (strncmp(input,"type",5 )== 0) return 1;
+    char arg[100];
+    strcpy(arg,input);
+    arg[strcspn(arg, "\n")] = '\0';
+    char *res = strstr(commands, arg);
+    if (res != NULL) return 1;
     else return 0;
 }
 
