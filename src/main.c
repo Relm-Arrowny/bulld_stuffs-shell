@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
       if (checkType(userInput + 5)) 
         printf("%s is a shell builtin\n", userInput+5);
       else
-        noCommand (userInput+5);
+        printf("%s: not found\n", userInput+5);
     else
       noCommand (userInput);
   }
