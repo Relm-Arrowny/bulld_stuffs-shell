@@ -22,9 +22,9 @@ int main(int argc, char *argv[]) {
       char * com = userInput + 5;
         if (checkType(com)) 
           printf("%s is a shell builtin\n", com);
-        else 
-          checkTypeDefaultPath(com);
-            //printf("%s: not found\n", com);
+        else if(checkTypeDefaultPath(com));
+        else
+          printf("%s: not found\n", com);
       }
     else
       noCommand (userInput);
