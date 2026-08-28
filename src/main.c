@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 
   char userInput[1024];
   while(1){
-    printf("$ ");
+    //printf("$ ");
     fgets(userInput, sizeof(userInput), stdin);
     userInput[strcspn(userInput, "\n")] = '\0';
     
