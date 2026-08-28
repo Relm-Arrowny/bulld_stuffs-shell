@@ -1,0 +1,23 @@
+when user enters type command
+
+check if it is an internal command
+if not
+    get PATH
+    if PATH is NULL
+        return NULL
+        
+    split PATH into path_list
+    
+    result_path = NULL    // Default to not found
+    
+    loop through path_list:
+        char temp_full_path[1024]
+        snprintf(temp_path, sizeof(temp_path), "%s/%s", dir, command)
+        
+        if full_path exists and is executable:
+            result_path = strdup(temp_path) 
+            break                             
+            
+    // --- SINGLE CLEANUP POINT ---
+    free_list(path_list)            
+    return result_path

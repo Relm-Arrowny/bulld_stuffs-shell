@@ -18,11 +18,14 @@ int main(int argc, char *argv[]) {
       break;
     else if (strncmp(userInput,"echo ",5 )== 0)
       printf("%s\n", userInput + 5);
-    else if (strncmp(userInput,"type ",5 )== 0)
-      if (checkType(userInput + 5)) 
-        printf("%s is a shell builtin\n", userInput+5);
-      else
-        printf("%s: not found\n", userInput+5);
+    else if (strncmp(userInput,"type ",5 )== 0){
+      char * com = userInput + 5;
+        if (checkType(com)) 
+          printf("%s is a shell builtin\n", com);
+        else if(checkTypeDefaultPath(com));
+        else
+          printf("%s: not found\n", com);
+      }
     else
       noCommand (userInput);
   }
