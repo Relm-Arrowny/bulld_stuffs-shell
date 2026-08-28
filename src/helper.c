@@ -20,7 +20,7 @@ char *checkTypePath(const char* path, const char* input){
         snprintf(full_path, sizeof(full_path), "%s/%s", *ptr, input);
         if (is_executable(full_path))
             printf("%s is %s\n", input,full_path);
-            break;
+            return 0;
     }
         
     free_string_list(path_list);
