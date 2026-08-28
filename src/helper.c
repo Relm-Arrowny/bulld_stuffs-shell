@@ -52,19 +52,23 @@ int checkAndRun(const char *com)
 {
     char ** split_com =  split_string(com, "\t");
     char *path = NULL;
+    
     if(strchr(split_com[0] , '/') != NULL){
-        path = strdup(split_com[0]);
+        if (is_executable(split_com[0]))
+            path = strdup(split_com[0]);
     }
     else if (path =  checkTypeDefaultPath(split_com[0]));
-    else if (path = checkBuildinType(split_com[0]));
+    
     else 
         noCommand(split_com[0]);
         return 0;
+    
     if (path !=NULL){
         pid_t pid = fork();
         if (pid==0){
             execv(path, split_com);
             exit(0);
+            printf("%s\n", path[0]);
         }
         
         else{
