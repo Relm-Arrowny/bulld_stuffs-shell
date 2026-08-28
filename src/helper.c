@@ -60,7 +60,7 @@ int checkAndRun(const char *com)
     else if (path =  checkTypeDefaultPath(split_com[0]));
     
     else 
-        noCommand(split_com[0]);
+        noCommand(split_com);
         return 0;
     
     if (path !=NULL){
@@ -68,7 +68,6 @@ int checkAndRun(const char *com)
         if (pid==0){
             execv(path, split_com);
             exit(0);
-            printf("%s\n", path[0]);
         }
         
         else{
