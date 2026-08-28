@@ -53,12 +53,12 @@ int checkAndRun(const char *com)
     char ** split_com =  split_string(com, "\t");
     char *path = NULL;
     
-    if(strchr(split_com[0] , '/') != NULL){
+
+    if (path =  checkTypeDefaultPath(split_com[0]));
+    else  if(split_com[0] != NULL){
         if (is_executable(split_com[0]))
             path = strdup(split_com[0]);
     }
-    else if (path =  checkTypeDefaultPath(split_com[0]));
-    
     else 
         noCommand(com);
         return 0;
