@@ -2,9 +2,27 @@
 #include "helper.h"
 const char *builtins[] = {"exit", "echo", "type"};
 
-int checkType(char* input){
-    size_t count = sizeof(builtins) / sizeof(builtins[0]);
 
+int checkType(const char* input){
+    if (input == NULL) return 0;
+    char* result = NULL;
+    if (checkBuildinType(input)){
+        printf("%s is a shell builtin\n", input);
+        return 1;
+    }
+    else if(result = checkTypeDefaultPath(input)){
+        printf("%s is %s\n", input, result);
+        free(result);
+        return 1;
+    }
+    printf("%s: not found\n", input);
+    return 0;
+
+}
+
+int checkBuildinType(const char* input){
+    if (input == NULL) return 0;
+    size_t count = sizeof(builtins) / sizeof(builtins[0]);
     for (size_t i = 0; i < count; i++){
         if (strcmp(input, builtins[i]) == 0) 
             return 1;
@@ -19,9 +37,9 @@ char *checkTypePath(const char* path, const char* input){
         char full_path[1024];
         snprintf(full_path, sizeof(full_path), "%s/%s", *ptr, input);
         if (access(full_path, X_OK) == 0){
-            printf("%s is %s\n", input,full_path);
+            char * return_path =strdup(full_path);
             free_string_list(path_list);
-            return "";
+            return return_path;
             }
     }
         
@@ -49,7 +67,7 @@ int is_executable(const char *full_path) {
     }
     return 0;
 }
-void noCommand(char* com){
+void noCommand(const char* com){
     printf("%s: command not found\n", com);
 }
 

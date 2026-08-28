@@ -5,10 +5,11 @@
 #include <string.h>
 #include <unistd.h>
 
-int checkType(char* input);
+int checkType(const char* input);
+int checkBuildinType(const char* input);
 char *checkTypePath(const char* path, const char* input);
 char *checkTypeDefaultPath(const char* input);
-void noCommand(char* com);
+void noCommand(const char* com);
 int is_executable(const char *full_path);
 char **split_string(const char * str,const char *delim);
 void free_string_list(char **list);
