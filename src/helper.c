@@ -50,32 +50,44 @@ char *checkTypePath(const char* path, const char* input){
 
 int checkAndRun(const char *com)
 {
-    char ** split_com =  split_string(com, "\t");
+    char ** split_com =  split_string(com, " \t\r\n");
+    if (split_com == NULL || split_com[0] == NULL) {
+        free_string_list(split_com);
+        return 0;
+    }
     char *path = NULL;
     
 
-    if (path =  checkTypeDefaultPath(split_com[0]));
-    else  if(split_com[0] != NULL){
-        if (is_executable(split_com[0]))
+    if ((path =  checkTypeDefaultPath(split_com[0]))!=NULL){
+    }
+    else if(is_executable(split_com[0])){
             path = strdup(split_com[0]);
     }
-    else 
+    else {
         noCommand(com);
+        free_string_list(split_com);
         return 0;
-    
+    }
     if (path !=NULL){
         pid_t pid = fork();
         if (pid==0){
             execv(path, split_com);
+            perror("execv failed");
+            free(path);
+            free_string_list(split_com);
             exit(0);
         }
         
         else{
-            waitpid(pid, NULL, 0);
+            int status;
+            waitpid(pid, &status, 0);
+
+            free(path);
+            free_string_list(split_com);
         }
 
     }
-    return 0;
+    return 1;
 }
 
 char *checkTypeDefaultPath(const char* input){
