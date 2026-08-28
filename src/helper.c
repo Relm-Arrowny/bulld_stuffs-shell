@@ -60,7 +60,7 @@ int checkAndRun(const char *com)
     else if (path =  checkTypeDefaultPath(split_com[0]));
     
     else 
-        noCommand(split_com);
+        noCommand(com);
         return 0;
     
     if (path !=NULL){
