@@ -48,6 +48,33 @@ char *checkTypePath(const char* path, const char* input){
 
 }
 
+int checkAndRun(const char *com)
+{
+    char ** split_com =  split_string(com, "\t");
+    char *path = NULL;
+    if(strchr(split_com[0] , '/') != NULL){
+        path = strdup(split_com[0]);
+    }
+    else if (path =  checkTypeDefaultPath(split_com[0]));
+    else if (path = checkBuildinType(split_com[0]));
+    else 
+        noCommand(split_com[0]);
+        return 0;
+    if (path !=NULL){
+        pid_t pid = fork();
+        if (pid==0){
+            execv(path, split_com);
+            exit(0);
+        }
+        
+        else{
+            waitpid(pid, NULL, 0);
+        }
+
+    }
+    return 0;
+}
+
 char *checkTypeDefaultPath(const char* input){
 
     if (input == NULL) {

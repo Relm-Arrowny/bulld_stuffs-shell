@@ -4,11 +4,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <sys/types.h>
 int checkType(const char* input);
 int checkBuildinType(const char* input);
-char *checkTypePath(const char* path, const char* input);
 char *checkTypeDefaultPath(const char* input);
+char *checkTypePath(const char* path, const char* input);
+int checkAndRun(const char* com);
+
 void noCommand(const char* com);
 int is_executable(const char *full_path);
 char **split_string(const char * str,const char *delim);

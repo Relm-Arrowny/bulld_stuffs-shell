@@ -21,9 +21,9 @@ int main(int argc, char *argv[]) {
     else if (strncmp(userInput,"type ",5 )== 0){
       checkType(userInput + 5); 
       }
-    else
-      noCommand (userInput);
-  }
+    else 
+      checkAndRun(userInput);
+
 
   return 0;
 }

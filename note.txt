@@ -1,23 +1,17 @@
-when user enters type command
+add comtom exe.
+custom_exe arg1 arg2
 
-check if it is an internal command
-if not
-    get PATH
-    if PATH is NULL
-        return NULL
-        
-    split PATH into path_list
-    
-    result_path = NULL    // Default to not found
-    
-    loop through path_list:
-        char temp_full_path[1024]
-        snprintf(temp_path, sizeof(temp_path), "%s/%s", dir, command)
-        
-        if full_path exists and is executable:
-            result_path = strdup(temp_path) 
-            break                             
-            
-    // --- SINGLE CLEANUP POINT ---
-    free_list(path_list)            
-    return result_path
+split_string
+
+check if custome_exe is in path
+    if command start with / and is executable set it to path and skill the check
+        checkTypeDefaultPath(const char* input)
+        checkTypePath(const char* path, const char* input)
+
+if so excute it with arg
+    fork()
+    if pid ==0
+        execv(path, argv)
+    else
+     waithpid(pid, &status, 0);
+     free_string_list(path)
