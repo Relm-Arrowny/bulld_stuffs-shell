@@ -20,6 +20,7 @@ char *checkTypePath(const char* path, const char* input){
         snprintf(full_path, sizeof(full_path), "%s/%s", *ptr, input);
         if (access(full_path, X_OK) == 0){
             printf("%s is %s\n", input,full_path);
+            free_string_list(path_list);
             return "";
             }
     }
