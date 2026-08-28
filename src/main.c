@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     else if (strncmp(userInput,"type ",5 )== 0){
       checkType(userInput + 5); 
       }
-    else if (strncmp(userInput,"pwd ",5 )== 0){
+    else if (strncmp(userInput,"pwd",3 )== 0){
       char cwd[PATH_MAX];
       if (getcwd(cwd, sizeof(cwd)) != NULL) {
         printf("%s\n", cwd);
