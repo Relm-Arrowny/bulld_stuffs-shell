@@ -18,7 +18,8 @@ char *checkTypePath(const char* path, const char* input){
         
         char full_path[1024];
         snprintf(full_path, sizeof(full_path), "%s/%s", *ptr, input);
-        printf("%s is %s\n", input,full_path);
+        if (is_executable(full_path))
+            printf("%s is %s\n", input,full_path);
     }
         
     free_string_list(path_list);
@@ -37,6 +38,13 @@ char *checkTypeDefaultPath(const char* input){
     }
 
     return checkTypePath(path_env, input);
+}
+
+int is_executable(const char *full_path) {
+    if (access(full_path, X_OK) == 0) {
+        return 1;
+    }
+    return 0;
 }
 void noCommand(char* com){
     printf("%s: command not found\n", com);
