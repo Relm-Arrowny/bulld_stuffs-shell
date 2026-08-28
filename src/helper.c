@@ -18,7 +18,7 @@ char *checkTypePath(const char* path, const char* input){
         
         char full_path[1024];
         snprintf(full_path, sizeof(full_path), "%s/%s", *ptr, input);
-        printf("%s\n", full_path);
+        printf("%s is %s\n", input,full_path);
     }
         
     free_string_list(path_list);
