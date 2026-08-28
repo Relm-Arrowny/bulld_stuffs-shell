@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <linux/limits.h>
+
 int checkType(const char* input);
 int checkBuildinType(const char* input);
 char *checkTypeDefaultPath(const char* input);

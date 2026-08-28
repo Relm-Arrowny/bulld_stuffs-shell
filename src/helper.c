@@ -1,6 +1,6 @@
 
 #include "helper.h"
-const char *builtins[] = {"exit", "echo", "type"};
+const char *builtins[] = {"exit", "echo", "type", "pwd"};
 
 
 int checkType(const char* input){
@@ -48,6 +48,20 @@ char *checkTypePath(const char* path, const char* input){
 
 }
 
+char *checkTypeDefaultPath(const char* input){
+
+    if (input == NULL) {
+        return NULL;
+    }
+    const char *path_env = getenv("PATH");
+    if (path_env == NULL || *path_env == '\0') {
+        return NULL;
+    }
+
+    return checkTypePath(path_env, input);
+}
+
+
 int checkAndRun(const char *com)
 {
     char ** split_com =  split_string(com, " \t\r\n");
@@ -90,18 +104,6 @@ int checkAndRun(const char *com)
     return 1;
 }
 
-char *checkTypeDefaultPath(const char* input){
-
-    if (input == NULL) {
-        return NULL;
-    }
-    const char *path_env = getenv("PATH");
-    if (path_env == NULL || *path_env == '\0') {
-        return NULL;
-    }
-
-    return checkTypePath(path_env, input);
-}
 
 int is_executable(const char *full_path) {
     if (access(full_path, X_OK) == 0) {
