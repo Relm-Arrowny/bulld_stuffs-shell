@@ -31,6 +31,9 @@ int main(int argc, char *argv[]) {
         perror("getcwd() error");
       }
     }
+    else if (strncmp(userInput,"cd ",3 )== 0){
+      chdir(userInput+3);
+    }
     else 
       checkAndRun(userInput);
   }
