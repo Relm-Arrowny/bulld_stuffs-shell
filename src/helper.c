@@ -119,6 +119,8 @@ int changeDir(const char *path)
 {  
     if (is_directory(path))
         chdir(path);
+    else
+        printf("cd: %s: No such file or directory", path);
 
 }
 

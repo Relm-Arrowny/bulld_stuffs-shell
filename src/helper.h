@@ -18,6 +18,7 @@ int checkAndRun(const char* com);
 void noCommand(const char* com);
 int changeDir(const char * path);
 int is_executable(const char *full_path);
+int is_directory(const char *path) ;
 char **split_string(const char * str,const char *delim);
 void free_string_list(char **list);
 
