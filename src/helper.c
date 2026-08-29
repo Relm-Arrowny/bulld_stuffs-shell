@@ -117,8 +117,10 @@ void noCommand(const char* com){
 
 int changeDir(const char *path)
 {  
-    if (strcmp(path, "~"))
-        chdir("/home/user");
+    if (strcmp(path, "~")){
+        char *home = getenv("HOME");
+        chdir(home);
+    }
     if (is_directory(path))
         chdir(path);
     else
