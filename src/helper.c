@@ -117,11 +117,11 @@ void noCommand(const char* com){
 
 int changeDir(const char *path)
 {  
-    if (strcmp(path, "~")){
+    if (strncmp(path, "~", 1) == 0){
         char *home = getenv("HOME");
         chdir(home);
     }
-    if (is_directory(path))
+    else if (is_directory(path))
         chdir(path);
     else
         printf("cd: %s: No such file or directory\n", path);

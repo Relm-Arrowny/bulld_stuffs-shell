@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
       }
     }
     else if (strncmp(userInput,"cd ",3 )== 0){
-      chdir(userInput+3);
+      changeDir(userInput+3);
     }
     else 
       checkAndRun(userInput);
