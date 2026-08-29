@@ -115,6 +115,24 @@ void noCommand(const char* com){
     printf("%s: command not found\n", com);
 }
 
+int changeDir(const char *path)
+{  
+    if (is_directory(path))
+        chdir(path);
+
+}
+
+int is_directory(const char *path) {
+    struct stat path_stat;
+    
+
+    if (stat(path, &path_stat) != 0) {
+        return 0;
+    }
+    
+    return S_ISDIR(path_stat.st_mode);
+}
+
 char **split_string(const char * str,const char *delim){
     if (str ==NULL || delim == NULL)
         return NULL;
