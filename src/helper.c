@@ -119,6 +119,9 @@ char **split_string_quotes(const char* input)
                 quote_flag = '\0';
             }
             else{
+                if (c== '\\'){
+                    c = input[++i];    
+                }
                 temp[ temp_idx++] = c;
             }
         }
