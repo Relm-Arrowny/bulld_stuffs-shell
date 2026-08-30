@@ -120,7 +120,11 @@ char **split_string_quotes(const char* input)
         }
         else if (((c == ' ' || c == '\t' || c == '\n' || c == '\r')) && quote_flag == '\0' || c == '\0'){
             if (c == ' '){
-                if (last_c_is_space >= 2){
+                if (last_c_is_space == 1){
+                    temp[ temp_idx++] = c;
+                    continue;
+                }
+                else if (last_c_is_space >= 1){
                     continue;
                 }
                 else
