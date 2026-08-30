@@ -118,20 +118,18 @@ char **split_string_quotes(const char* input)
             }
         }
         else if (((c == ' ' || c == '\t' || c == '\n' || c == '\r')) && quote_flag == '\0' || c == '\0'){
-            if (temp_idx >0){
-                if (temp[temp_idx-1]== ' '){
-                    continue;
-                } 
-                else{
-                    temp[temp_idx] = '\0';
-                    }
-                    if (token_counter >= capacity-1){
-                        capacity *= 2;
-                        tokens = realloc(tokens, sizeof(char *)*capacity);
-                    }
-                    tokens[token_counter++]=strdup(temp);
-                    temp_idx = 0;
-                } 
+
+            if (temp_idx > 0) {
+        temp[temp_idx] = '\0';
+
+        if (token_counter >= capacity - 1) {
+            capacity *= 2;
+            tokens = realloc(tokens, sizeof(char *) * capacity);
+        }
+
+        tokens[token_counter++] = strdup(temp);
+        temp_idx = 0; // Reset temp_idx back to 0
+    }
         }
         else
             temp[ temp_idx++] = c;
