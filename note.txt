@@ -1,17 +1,32 @@
-add comtom exe.
-custom_exe arg1 arg2
+add split string to ignore special char inside ` and "", treat them as if it is a signal string
 
-split_string
 
-check if custome_exe is in path
-    if command start with / and is executable set it to path and skill the check
-        checkTypeDefaultPath(const char* input)
-        checkTypePath(const char* path, const char* input)
+check imput is not NULL
 
-if so excute it with arg
-    fork()
-    if pid ==0
-        execv(path, argv)
-    else
-     waithpid(pid, &status, 0);
-     free_string_list(path)
+work out the lenght of the str
+
+alloc memory for the return list of loken
+
+
+loop through each char in str
+    temp char token
+    if we encounter ` or `` 
+        if the quote flag is empty
+            replace the empty with the quote
+        else if quote flag is the same as what we enchounter
+            empty the quote flag
+        else 
+            add whatever char to the end of the temp token
+        
+    else if we enchounter space tap or \n \0
+        if temp is not ""
+            temp[idx] = '\0'
+            strdup(temp)
+            add it to the list
+            reset temp token to ""
+        else
+            do nothing
+    else  <-- ADD THIS BRANCH
+        add char to the end of temp token
+return the list
+    

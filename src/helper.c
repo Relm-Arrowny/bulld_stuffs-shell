@@ -1,34 +1,5 @@
 
 #include "helper.h"
-const char *builtins[] = {"exit", "echo", "type", "pwd"};
-
-
-int checkType(const char* input){
-    if (input == NULL) return 0;
-    char* result = NULL;
-    if (checkBuildinType(input)){
-        printf("%s is a shell builtin\n", input);
-        return 1;
-    }
-    else if(result = checkTypeDefaultPath(input)){
-        printf("%s is %s\n", input, result);
-        free(result);
-        return 1;
-    }
-    printf("%s: not found\n", input);
-    return 0;
-
-}
-
-int checkBuildinType(const char* input){
-    if (input == NULL) return 0;
-    size_t count = sizeof(builtins) / sizeof(builtins[0]);
-    for (size_t i = 0; i < count; i++){
-        if (strcmp(input, builtins[i]) == 0) 
-            return 1;
-    }
-    return 0;
-}
 
 char *checkTypePath(const char* path, const char* input){
     char ** path_list = split_string(path, ":");
@@ -62,70 +33,11 @@ char *checkTypeDefaultPath(const char* input){
 }
 
 
-int checkAndRun(const char *com)
-{
-    char ** split_com =  split_string(com, " \t\r\n");
-    if (split_com == NULL || split_com[0] == NULL) {
-        free_string_list(split_com);
-        return 0;
-    }
-    char *path = NULL;
-    
-
-    if ((path =  checkTypeDefaultPath(split_com[0]))!=NULL){
-    }
-    else if(is_executable(split_com[0])){
-            path = strdup(split_com[0]);
-    }
-    else {
-        noCommand(com);
-        free_string_list(split_com);
-        return 0;
-    }
-    if (path !=NULL){
-        pid_t pid = fork();
-        if (pid==0){
-            execv(path, split_com);
-            perror("execv failed");
-            free(path);
-            free_string_list(split_com);
-            exit(0);
-        }
-        
-        else{
-            int status;
-            waitpid(pid, &status, 0);
-
-            free(path);
-            free_string_list(split_com);
-        }
-
-    }
-    return 1;
-}
-
-
 int is_executable(const char *full_path) {
     if (access(full_path, X_OK) == 0) {
         return 1;
     }
     return 0;
-}
-void noCommand(const char* com){
-    printf("%s: command not found\n", com);
-}
-
-int changeDir(const char *path)
-{  
-    if (strncmp(path, "~", 1) == 0){
-        char *home = getenv("HOME");
-        chdir(home);
-    }
-    else if (is_directory(path))
-        chdir(path);
-    else
-        printf("cd: %s: No such file or directory\n", path);
-
 }
 
 int is_directory(const char *path) {
@@ -181,6 +93,46 @@ char **split_string(const char * str,const char *delim){
     result[count] = NULL;
     free(str_copy);
     return result;
+}
+
+char **split_string_quotes(const char* input)
+{
+    int str_len = strlen(input);
+    int capacity = 8;
+    int token_counter = 0;
+    char ** tokens = malloc(sizeof(char *)*capacity);
+    char quote_flag = '\0';
+    char temp[PATH_MAX];
+    int temp_idx = 0;
+
+    for (int i = 0; i<=str_len; i++){
+        char c = input[i];
+        if (c == '\'' || c == '"'){
+            if (quote_flag == '\0')
+                quote_flag = c;
+            else if (quote_flag == c){
+                quote_flag = '\0';
+            }
+            else{
+                temp[ temp_idx++] = c;
+            }
+        }
+        else if (((c == ' ' || c == '\t' || c == '\n' || c == '\r')) && quote_flag == '\0' || c == '\0'){
+            if (temp_idx >0){
+                temp[temp_idx] = '\0';
+                }
+                if (token_counter >= capacity-1){
+                    capacity *= 2;
+                    tokens = realloc(tokens, sizeof(char *)*capacity);
+                }
+                tokens[token_counter++]=strdup(temp);
+                temp_idx = 0; 
+        }
+        else
+            temp[ temp_idx++] = c;
+    }
+    tokens[token_counter] = NULL;
+    return tokens;
 }
 
 void free_string_list(char **list) {

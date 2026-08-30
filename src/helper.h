@@ -7,19 +7,16 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <linux/limits.h>
 
-
-int checkType(const char* input);
-int checkBuildinType(const char* input);
-char *checkTypeDefaultPath(const char* input);
 char *checkTypePath(const char* path, const char* input);
-int checkAndRun(const char* com);
+char *checkTypeDefaultPath(const char* input);
 
-void noCommand(const char* com);
-int changeDir(const char * path);
 int is_executable(const char *full_path);
 int is_directory(const char *path) ;
+
 char **split_string(const char * str,const char *delim);
+char **split_string_quotes(const char * input);
 void free_string_list(char **list);
 
 #endif

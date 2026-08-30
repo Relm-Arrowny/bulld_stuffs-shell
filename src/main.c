@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "helper.h"
+#include <unistd.h>
 #include <linux/limits.h>
-
+#include "commands.h"
+#include "helper.h"
 int main(int argc, char *argv[]) {
   // Flush after every printf
   //setbuf(stdout, NULL);
@@ -14,15 +15,24 @@ int main(int argc, char *argv[]) {
     printf("$ ");
     fgets(userInput, sizeof(userInput), stdin);
     userInput[strcspn(userInput, "\n")] = '\0';
-    
-    if (strcmp(userInput,"exit")==0)
+    char ** input_list;
+    input_list = split_string_quotes(userInput);
+
+    if (input_list == NULL || input_list[0] == NULL) {
+        free_string_list(input_list);
+        continue;
+    }
+    if (strcmp(input_list[0],"exit")==0){
+      free_string_list(input_list);
       break;
-    else if (strncmp(userInput,"echo ",5 )== 0)
-      printf("%s\n", userInput + 5);
-    else if (strncmp(userInput,"type ",5 )== 0){
-      checkType(userInput + 5); 
+    }
+    else if (strcmp(input_list[0], "echo") == 0){
+      custom_echo((const char **)input_list);
+    }
+    else if (strcmp(input_list[0],"type")== 0){
+      checkType(input_list[1]); 
       }
-    else if (strncmp(userInput,"pwd",3 )== 0){
+    else if (strcmp(input_list[0],"pwd" )== 0){
       char cwd[PATH_MAX];
       if (getcwd(cwd, sizeof(cwd)) != NULL) {
         printf("%s\n", cwd);
@@ -31,11 +41,12 @@ int main(int argc, char *argv[]) {
         perror("getcwd() error");
       }
     }
-    else if (strncmp(userInput,"cd ",3 )== 0){
-      changeDir(userInput+3);
+    else if (strcmp(input_list[0], "cd")== 0){
+      changeDir(input_list[1]);
     }
     else 
-      checkAndRun(userInput);
+      checkAndRun(input_list);
+    free_string_list(input_list);
   }
   return 0;
 }
