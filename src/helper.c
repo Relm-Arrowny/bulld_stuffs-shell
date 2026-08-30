@@ -107,7 +107,7 @@ char **split_string_quotes(const char* input)
 
     for (int i = 0; i<=str_len; i++){
         char c = input[i];
-        if (c == '\'' || c == '"'){
+        if ((c == '\'' || c == '"'|| quote_flag != '\0' )){
             if (quote_flag == '\0')
                 quote_flag = c;
             else if (quote_flag == c){
