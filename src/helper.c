@@ -104,6 +104,7 @@ char **split_string_quotes(const char* input)
     char quote_flag = '\0';
     char temp[PATH_MAX];
     int temp_idx = 0;
+    int last_c_is_space = 0;
 
     for (int i = 0; i<=str_len; i++){
         char c = input[i];
@@ -117,7 +118,16 @@ char **split_string_quotes(const char* input)
                 temp[ temp_idx++] = c;
             }
         }
-        else if ((( c == '\t' || c == '\n' || c == '\r')) && quote_flag == '\0' || c == '\0'){
+        else if (((c == ' ' || c == '\t' || c == '\n' || c == '\r')) && quote_flag == '\0' || c == '\0'){
+            if (c == ' '){
+                if (last_c_is_space == 1){
+                    continue;
+                }
+                else
+                    last_c_is_space = 1;
+            }
+            else
+                last_c_is_space = 0;
             if (temp_idx >0){
                 temp[temp_idx] = '\0';
                 }
