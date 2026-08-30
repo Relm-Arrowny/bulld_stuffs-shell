@@ -5,8 +5,9 @@ const char *builtins[] = {"exit", "echo", "type", "pwd"};
 int custom_echo(const char **input)
 {
     for (int i = 1; input[i] !=NULL; i++){
-        printf("%s\n", input[i]);
+        printf("%s ", input[i]);
     }
+    printf("\n");
     return 0;
 }
 
