@@ -117,7 +117,7 @@ char **split_string_quotes(const char* input)
                 temp[ temp_idx++] = c;
             }
         }
-        else if (((c == ' ' || c == '\t' || c == '\n' || c == '\r')) && quote_flag == '\0' || c == '\0'){
+        else if ((( c == '\t' || c == '\n' || c == '\r')) && quote_flag == '\0' || c == '\0'){
             if (temp_idx >0){
                 temp[temp_idx] = '\0';
                 }
