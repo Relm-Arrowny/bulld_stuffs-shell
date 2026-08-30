@@ -108,19 +108,22 @@ char **split_string_quotes(const char* input)
     for (int i = 0; i<=str_len; i++){
         char c = input[i];
         if (quote_flag == '\0' && c == '\\'){
-            c = input[++i];
-            temp[temp_idx++] = c;
-            continue;
+            if (i < str_len) {
+                i++;
+                temp[temp_idx++] = input[i];
+            }
         }
         else if(quote_flag == '"' && c == '\\'){
-            if (input[i+1]=='"' || input[i+1] =='\\'){
-                c = input[++i];
+            char next = input[i + 1];
+            if (next == '"' || next == '\\' || next == '$' || next == '\n') {
+                i++;
+                temp[temp_idx++] = input[i];
+            } else {
                 temp[temp_idx++] = c;
-                continue;
             }
         }
         
-        if ((c == '\'' || c == '"')){
+        else if ((c == '\'' || c == '"')){
             if (quote_flag == '\0')
                 quote_flag = c;
             else if (quote_flag == c){
