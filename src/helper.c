@@ -107,6 +107,11 @@ char **split_string_quotes(const char* input)
 
     for (int i = 0; i<=str_len; i++){
         char c = input[i];
+        if (quote_flag == '\0' && c == '\\'){
+            c = input[++i];
+            temp[temp_idx++] = c;
+            continue;
+        }
         if ((c == '\'' || c == '"')){
             if (quote_flag == '\0')
                 quote_flag = c;
@@ -131,7 +136,7 @@ char **split_string_quotes(const char* input)
     }
         }
         else
-            temp[ temp_idx++] = c;
+            temp[temp_idx++] = c;
     }
     tokens[token_counter] = NULL;
     return tokens;
