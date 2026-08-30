@@ -107,7 +107,7 @@ char **split_string_quotes(const char* input)
 
     for (int i = 0; i<=str_len; i++){
         char c = input[i];
-        if (quote_flag == '\0' && c == '\\'){
+        if ( c == '\\'){
             c = input[++i];
             temp[temp_idx++] = c;
             continue;
@@ -119,10 +119,7 @@ char **split_string_quotes(const char* input)
                 quote_flag = '\0';
             }
             else{
-                if (c== '\\'){
-                    c = input[++i];    
-                }
-                temp[ temp_idx++] = c;
+                temp[temp_idx++] = c;
             }
         }
         else if (((c == ' ' || c == '\t' || c == '\n' || c == '\r')) && quote_flag == '\0' || c == '\0'){
