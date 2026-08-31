@@ -27,10 +27,10 @@ int main(int argc, char *argv[]) {
       break;
     }
     else if (strcmp(input_list[0], "echo") == 0){
-      custom_echo((const char **)input_list);
+      buldtin_redirection_wraper(input_list,custom_echo);
     }
     else if (strcmp(input_list[0],"type")== 0){
-      checkType(input_list[1]); 
+      buldtin_redirection_wraper(input_list,checkType);
       }
     else if (strcmp(input_list[0],"pwd" )== 0){
       char cwd[PATH_MAX];

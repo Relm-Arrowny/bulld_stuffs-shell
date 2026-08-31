@@ -1,32 +1,9 @@
-add split string to ignore special char inside ` and "", treat them as if it is a signal string
+add redirect to my commands with >
 
+void setup_redirection( char **com)
 
-check imput is not NULL
-
-work out the lenght of the str
-
-alloc memory for the return list of loken
-
-
-loop through each char in str
-    temp char token
-    if we encounter ` or `` 
-        if the quote flag is empty
-            replace the empty with the quote
-        else if quote flag is the same as what we enchounter
-            empty the quote flag
-        else 
-            add whatever char to the end of the temp token
-        
-    else if we enchounter space tap or \n \0
-        if temp is not ""
-            temp[idx] = '\0'
-            strdup(temp)
-            add it to the list
-            reset temp token to ""
-        else
-            do nothing
-    else  <-- ADD THIS BRANCH
-        add char to the end of temp token
-return the list
-    
+if > is within the command
+    set redirection to whatever on the right of >
+    could fork here and run the command in ned pid so ?
+    run the coomand without > .....
+    reset the redirection. if fork no need to reset

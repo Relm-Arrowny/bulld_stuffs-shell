@@ -51,6 +51,46 @@ int is_directory(const char *path) {
     return S_ISDIR(path_stat.st_mode);
 }
 
+void setup_redirection(char **com)
+{
+    for (char **ipter = com; *ipter !=NULL; ipter++){
+        if ((strcmp(*ipter,">") == 0 || strcmp(*ipter,"1>")== 0) ){
+            char *filename = *(ipter+1);
+            if (filename ==NULL){
+                fprintf(stderr,"syntax error near unexpected filename 'newline'\n");
+                exit(1);
+            }
+            else{
+                int fd = open(*(ipter+1),O_WRONLY | O_CREAT | O_TRUNC, 0644 );
+                dup2(fd,STDOUT_FILENO);
+                close(fd);
+                free(*ipter);
+                free(*(ipter+1));
+                char **curr = ipter;
+                do {
+                    *curr = *(curr + 2);
+                    curr++;
+                } while (*curr != NULL);
+            }
+        }
+
+    }
+}
+
+int buldtin_redirection_wraper(char **com, int (*func)(const char **)){
+    int saved_stdout = dup(STDOUT_FILENO); 
+    if (saved_stdout < 0) {
+        perror("dup failed");
+        return -1;
+    }
+    setup_redirection(com);
+    int success = func((const char **) com);
+    fflush(stdout);
+    dup2(saved_stdout, STDOUT_FILENO);
+    close(saved_stdout);
+    return success;
+}
+
 char **split_string(const char * str,const char *delim){
     if (str ==NULL || delim == NULL)
         return NULL;
@@ -133,18 +173,19 @@ char **split_string_quotes(const char* input)
                 temp[temp_idx++] = c;
             }
         }
+        
         else if (((c == ' ' || c == '\t' || c == '\n' || c == '\r') && quote_flag == '\0') || c == '\0'){
             if (temp_idx > 0) {
                 temp[temp_idx] = '\0';
 
-            if (token_counter >= capacity - 1) {
-                capacity *= 2;
-                tokens = realloc(tokens, sizeof(char *) * capacity);
-            }
+                if (token_counter >= capacity - 1) {
+                    capacity *= 2;
+                    tokens = realloc(tokens, sizeof(char *) * capacity);
+                }
 
-            tokens[token_counter++] = strdup(temp);
-            temp_idx = 0; 
-    }
+                tokens[token_counter++] = strdup(temp);
+                temp_idx = 0; 
+            }
         }
         else
             temp[temp_idx++] = c;

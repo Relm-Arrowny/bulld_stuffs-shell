@@ -65,6 +65,7 @@ int checkAndRun(char **com)
     if (path !=NULL){
         pid_t pid = fork();
         if (pid==0){
+            setup_redirection(com);
             execv(path, com);
             perror("execv failed");
             free(path);
@@ -81,19 +82,19 @@ int checkAndRun(char **com)
     return 1;
 }
 
-int checkType(const char* input){
+int checkType(const char** input){
     if (input == NULL) return 0;
     char* result = NULL;
-    if (checkBuildinType(input)){
-        printf("%s is a shell builtin\n", input);
+    if (checkBuildinType(input[1])){
+        printf("%s is a shell builtin\n", input[1]);
         return 1;
     }
-    else if(result = checkTypeDefaultPath(input)){
-        printf("%s is %s\n", input, result);
+    else if((result = checkTypeDefaultPath(input[1]))!= NULL){
+        printf("%s is %s\n", input[1], result);
         free(result);
         return 1;
     }
-    printf("%s: not found\n", input);
+    printf("%s: not found\n", input[1]);
     return 0;
 
 }
