@@ -6,25 +6,43 @@
 #include <fcntl.h>
 #include <string.h>
 
+
+
+static int is_redirect(const char *tok) {
+    return strcmp(tok, ">") == 0  || strcmp(tok, "1>") == 0  || 
+           strcmp(tok, ">>") == 0 || strcmp(tok, "1>>") == 0 || 
+           strcmp(tok, "2>") == 0 || strcmp(tok, "2>>") == 0;
+}
+
+static int is_append(const char *tok) {
+    return strcmp(tok, ">>") == 0 || strcmp(tok, "1>>") == 0 || strcmp(tok, "2>>") == 0;
+}
+
+static int is_stderr(const char *tok) {
+    return strcmp(tok, "2>") == 0 || strcmp(tok, "2>>") == 0;
+}
 void setup_redirection(char **com)
 {
     for (char **ipter = com; *ipter !=NULL;){
         if (com == NULL) {
             return;
         }
-        if ((strcmp(*ipter,">") == 0 || strcmp(*ipter,"1>")== 0|| strcmp(*ipter,"2>")== 0) ){
+       
+        if (is_redirect(*ipter)){
             char *filename = *(ipter+1);
             if (filename ==NULL){
                 fprintf(stderr,"syntax error near unexpected filename 'newline'\n");
                 exit(1);
             }
             else{
-                int fd = open(*(ipter+1),O_WRONLY | O_CREAT | O_TRUNC, 0644 );
+
+                int flags = O_WRONLY | O_CREAT | (is_append(*ipter) ? O_APPEND : O_TRUNC);
+                int fd = open(*(ipter + 1), flags, 0644);
                 if (fd < 0) {
                     perror("open");
                     return;
                 }
-                int target_fd = (strcmp(*ipter, "2>") == 0) ? STDERR_FILENO : STDOUT_FILENO;
+                int target_fd = is_stderr(*ipter) ? STDERR_FILENO : STDOUT_FILENO;
 
                 if (dup2(fd, target_fd) < 0) {
                     perror("dup2");
