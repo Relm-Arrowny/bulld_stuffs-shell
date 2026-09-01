@@ -1,5 +1,17 @@
-#include "helper.h"
 #include "commands.h"
+
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <linux/limits.h>
+#include <fcntl.h>
+
+#include "helper.h"
 const char *builtins[] = {"exit", "echo", "type", "pwd"};
 
 int custom_echo(const char **input)

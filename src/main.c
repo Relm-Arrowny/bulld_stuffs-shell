@@ -3,8 +3,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <linux/limits.h>
+
 #include "commands.h"
 #include "helper.h"
+#include "string_utils.h"
+
 int main(int argc, char *argv[]) {
   // Flush after every printf
   //setbuf(stdout, NULL);
