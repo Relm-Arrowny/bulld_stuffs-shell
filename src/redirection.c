@@ -8,8 +8,11 @@
 
 void setup_redirection(char **com)
 {
-    for (char **ipter = com; *ipter !=NULL; ipter++){
-        if ((strcmp(*ipter,">") == 0 || strcmp(*ipter,"1>")== 0) ){
+    for (char **ipter = com; *ipter !=NULL;){
+        if (com == NULL) {
+            return;
+        }
+        if ((strcmp(*ipter,">") == 0 || strcmp(*ipter,"1>")== 0|| strcmp(*ipter,"2>")== 0) ){
             char *filename = *(ipter+1);
             if (filename ==NULL){
                 fprintf(stderr,"syntax error near unexpected filename 'newline'\n");
@@ -21,11 +24,18 @@ void setup_redirection(char **com)
                     perror("open");
                     return;
                 }
+                int target_fd = (strcmp(*ipter, "2>") == 0) ? STDERR_FILENO : STDOUT_FILENO;
 
-                dup2(fd,STDOUT_FILENO);
+                if (dup2(fd, target_fd) < 0) {
+                    perror("dup2");
+                    close(fd);
+                    return;
+                }
                 close(fd);
+
                 free(*ipter);
                 free(*(ipter+1));
+
                 char **curr = ipter;
                 while (*(curr + 2) != NULL) {
                     *curr = *(curr + 2);
@@ -36,6 +46,7 @@ void setup_redirection(char **com)
                 continue;
             }
         }
+        ipter++;
 
     }
 }
