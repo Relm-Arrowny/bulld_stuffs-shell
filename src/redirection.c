@@ -29,7 +29,7 @@ void setup_redirection(char **com)
         }
        
         if (is_redirect(*ipter)){
-            char *filename = *(ipter+1);
+            const char *filename = *(ipter+1);
             if (filename ==NULL){
                 fprintf(stderr,"syntax error near unexpected filename 'newline'\n");
                 exit(1);

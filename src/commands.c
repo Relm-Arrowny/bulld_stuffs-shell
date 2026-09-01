@@ -29,7 +29,7 @@ int change_dir(const char *path)
 {  
     char target_path[PATH_MAX];
     if (path == NULL || strcmp(path, "~") == 0) {
-        char *home = getenv("HOME");
+        const char *home = getenv("HOME");
         if (home == NULL) {
             fputs("cd: HOME not set\n", stderr);
             return -1;

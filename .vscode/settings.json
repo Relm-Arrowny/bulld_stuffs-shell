@@ -1,0 +1,8 @@
+{
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "C_Cpp.intelliSenseEngine": "default",
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.codeAnalysis.clangTidy.runMode": "onType",
+    "C_Cpp.codeAnalysis.runAutomatically": true
+
+}

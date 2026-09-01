@@ -11,7 +11,7 @@ RUN if [ "${REINSTALL_CMAKE_VERSION_FROM_SOURCE}" != "none" ]; then \
     && rm -f /tmp/reinstall-cmake.sh
     
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends libreadline-dev curl ca-certificates
-
+    && apt-get -y install --no-install-recommends libreadline-dev curl ca-certificates \
+    && apt-get install -y clang-tidy
 USER vscode
 RUN curl -fsSL https://codecrafters.io/install.sh | bash
