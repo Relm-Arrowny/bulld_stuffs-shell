@@ -32,6 +32,8 @@ void setup_redirection(char **com)
                     curr++;
                 }
                 *curr = NULL;
+
+                continue;
             }
         }
 
