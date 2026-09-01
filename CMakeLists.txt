@@ -10,4 +10,4 @@ add_executable(shell ${SOURCE_FILES})
 
 target_link_libraries(shell PRIVATE readline)
 
-target_include_directories(build_stuffs-shell PUBLIC include)
+target_include_directories(codecrafters-shell-c PUBLIC include)
