@@ -2,6 +2,6 @@
 #define REDIRECTION_H
 
 void setup_redirection(char **com);
-int buildtin_redirection_wraper(char **com, int (*func)(const char **));
+int builtin_redirection_wraper(char **com, int (*func)(const char **));
 
 #endif

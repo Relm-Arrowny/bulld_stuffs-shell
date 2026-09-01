@@ -5,9 +5,9 @@
 #include <linux/limits.h>
 
 #include "commands.h"
-#include "helper.h"
+#include "redirection.h"
 #include "string_utils.h"
-
+#include "redirection.h"
 int main(int argc, char *argv[]) {
   // Flush after every printf
   //setbuf(stdout, NULL);
@@ -30,10 +30,10 @@ int main(int argc, char *argv[]) {
       break;
     }
     else if (strcmp(input_list[0], "echo") == 0){
-      buldtin_redirection_wraper(input_list,custom_echo);
+      builtin_redirection_wraper(input_list,custom_echo);
     }
     else if (strcmp(input_list[0],"type")== 0){
-      buldtin_redirection_wraper(input_list,checkType);
+      builtin_redirection_wraper(input_list,check_type);
       }
     else if (strcmp(input_list[0],"pwd" )== 0){
       char cwd[PATH_MAX];
@@ -45,10 +45,10 @@ int main(int argc, char *argv[]) {
       }
     }
     else if (strcmp(input_list[0], "cd")== 0){
-      changeDir(input_list[1]);
+      change_dir(input_list[1]);
     }
     else 
-      checkAndRun(input_list);
+      check_and_run(input_list);
     free_string_list(input_list);
   }
   return 0;

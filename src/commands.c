@@ -11,7 +11,9 @@
 #include <linux/limits.h>
 #include <fcntl.h>
 
-#include "helper.h"
+#include "path_utils.h"
+#include "redirection.h"
+
 const char *builtins[] = {"exit", "echo", "type", "pwd"};
 
 int custom_echo(const char **input)
@@ -23,13 +25,13 @@ int custom_echo(const char **input)
     return 0;
 }
 
-int changeDir(const char *path)
+int change_dir(const char *path)
 {  
     char target_path[PATH_MAX];
     if (path == NULL || strcmp(path, "~") == 0) {
         char *home = getenv("HOME");
         if (home == NULL) {
-            fprintf(stderr, "cd: HOME not set\n");
+            fputs("cd: HOME not set\n", stderr);
             return -1;
         }
         snprintf(target_path, sizeof(target_path), "%s", home);
@@ -37,7 +39,7 @@ int changeDir(const char *path)
     else if (strncmp(path, "~/", 2) == 0) {
         char *home = getenv("HOME");
         if (home == NULL) {
-            fprintf(stderr, "cd: HOME not set\n");
+            fputs("cd: HOME not set\n", stderr);
             return -1;
         }
         snprintf(target_path, sizeof(target_path), "%s/%s", home, path + 2);
@@ -60,12 +62,12 @@ int changeDir(const char *path)
 }
 
 
-int checkAndRun(char **com)
+int check_and_run(char **com)
 {
     char *path = NULL;
     
 
-    if ((path =  checkTypeDefaultPath(com[0]))!=NULL){
+    if ((path =  check_typeDefaultPath(com[0]))!=NULL){
     }
     else if(is_executable(com[0])){
             path = strdup(com[0]);
@@ -94,14 +96,14 @@ int checkAndRun(char **com)
     return 1;
 }
 
-int checkType(const char** input){
+int check_type(const char** input){
     if (input == NULL) return 0;
     char* result = NULL;
-    if (checkBuildinType(input[1])){
+    if (check_builtin_type(input[1])){
         printf("%s is a shell builtin\n", input[1]);
         return 1;
     }
-    else if((result = checkTypeDefaultPath(input[1]))!= NULL){
+    else if((result = check_typeDefaultPath(input[1]))!= NULL){
         printf("%s is %s\n", input[1], result);
         free(result);
         return 1;
@@ -111,7 +113,7 @@ int checkType(const char** input){
 
 }
 
-int checkBuildinType(const char* input){
+int check_builtin_type(const char* input){
     if (input == NULL) return 0;
     size_t count = sizeof(builtins) / sizeof(builtins[0]);
     for (size_t i = 0; i < count; i++){

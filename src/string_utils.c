@@ -22,7 +22,7 @@ char **split_string(const char * str,const char *delim){
     }
 
     char *saveptr;
-    char *token = strtok_r(str_copy, delim, &saveptr);
+    const char *token = strtok_r(str_copy, delim, &saveptr);
 
     while (token != NULL) {
         if (count+1 >= capacity){
@@ -94,7 +94,13 @@ char **split_string_quotes(const char* input)
 
                 if (token_counter >= capacity - 1) {
                     capacity *= 2;
-                    tokens = realloc(tokens, sizeof(char *) * capacity);
+                    char **new_tokens = realloc(tokens, sizeof(char *) * capacity);
+                    if (!new_tokens) {
+                        free_string_list(tokens); 
+                        return NULL;
+                    }
+
+                    tokens = new_tokens;
                 }
 
                 tokens[token_counter++] = strdup(temp);

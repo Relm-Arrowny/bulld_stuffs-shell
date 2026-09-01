@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 
 void setup_redirection(char **com)
 {
@@ -16,22 +17,28 @@ void setup_redirection(char **com)
             }
             else{
                 int fd = open(*(ipter+1),O_WRONLY | O_CREAT | O_TRUNC, 0644 );
+                if (fd < 0) {
+                    perror("open");
+                    return;
+                }
+
                 dup2(fd,STDOUT_FILENO);
                 close(fd);
                 free(*ipter);
                 free(*(ipter+1));
                 char **curr = ipter;
-                do {
+                while (*(curr + 2) != NULL) {
                     *curr = *(curr + 2);
                     curr++;
-                } while (*curr != NULL);
+                }
+                *curr = NULL;
             }
         }
 
     }
 }
 
-int buldtin_redirection_wraper(char **com, int (*func)(const char **)){
+int builtin_redirection_wraper(char **com, int (*func)(const char **)){
     int saved_stdout = dup(STDOUT_FILENO); 
     if (saved_stdout < 0) {
         perror("dup failed");
