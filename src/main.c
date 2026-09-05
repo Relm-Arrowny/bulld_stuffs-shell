@@ -32,10 +32,10 @@ int main(int argc, char *argv[]) {
       break;
     }
     else if (strcmp(input_list[0], "echo") == 0){
-      builtin_redirection_wraper(input_list,custom_echo);
+      builtin_redirection_wrapper(input_list,custom_echo);
     }
     else if (strcmp(input_list[0],"type")== 0){
-      builtin_redirection_wraper(input_list,check_type);
+      builtin_redirection_wrapper(input_list,check_type);
       }
     else if (strcmp(input_list[0],"pwd" )== 0){
       char cwd[PATH_MAX];
