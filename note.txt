@@ -1,9 +1,0 @@
-add redirect to my commands with >
-
-void setup_redirection( char **com)
-
-if > is within the command
-    set redirection to whatever on the right of >
-    could fork here and run the command in ned pid so ?
-    run the coomand without > .....
-    reset the redirection. if fork no need to reset

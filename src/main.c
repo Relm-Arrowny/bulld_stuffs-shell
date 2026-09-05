@@ -8,15 +8,17 @@
 #include "redirection.h"
 #include "string_utils.h"
 #include "redirection.h"
+#include "readline.h"
 int main(int argc, char *argv[]) {
   // Flush after every printf
   //setbuf(stdout, NULL);
 
 
-  char userInput[1024];
+  //char userInput[1024];
   while(1){
     printf("$ ");
-    fgets(userInput, sizeof(userInput), stdin);
+    //fgets(userInput, sizeof(userInput), stdin);
+    char *userInput = readline("$ ");
     userInput[strcspn(userInput, "\n")] = '\0';
     char ** input_list;
     input_list = split_string_quotes(userInput);

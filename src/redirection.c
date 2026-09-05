@@ -69,7 +69,7 @@ void setup_redirection(char **com)
     }
 }
 
-int builtin_redirection_wraper(char **com, int (*func)(const char **)){
+int builtin_redirection_wrapper(char **com, int (*func)(const char **)){
     int saved_stdout = dup(STDOUT_FILENO); 
     if (saved_stdout < 0) {
         perror("dup failed");
