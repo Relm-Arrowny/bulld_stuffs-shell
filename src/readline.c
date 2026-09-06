@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <commands.h>
+
 static struct termios orig_termios;
 static int atexit_registered = 0;
 static int is_raw_mode = 0;
@@ -50,7 +52,7 @@ char *readline(const char *prompt) {
     }
     printf("%s", prompt);
     fflush(stdout);
-
+    const char *builtins[] = {"exit", "echo", "type", "pwd"};
     char c;
     do {
         ssize_t bytes_read = read(STDIN_FILENO, &c, 1);
@@ -63,6 +65,27 @@ char *readline(const char *prompt) {
             cooked_mode();
             free(buffer);
             return NULL;
+        }
+        if (c == 127 || c == '\b'){
+            if (len>0){
+                buffer[--len] = '\0';
+                printf("\b \b");
+                fflush(stdout);
+            }
+            continue;
+        }
+        if (c == '\t') {
+            for (int i = 0; i < sizeof(builtins)/sizeof(builtins[0]); i++) {
+                if ((strstr( builtins[i],buffer) != NULL)) {
+                    for (int j = len; j< strlen(builtins[i]); j++) {
+                        char temp = builtins[i][j];
+                        buffer[len++] = temp;
+                        printf("%c", temp);
+                    }
+                    fflush(stdout);
+                }
+            }
+            continue;
         }
         if (c != '\r' && c != '\n') {
             buffer[len++] = c;
