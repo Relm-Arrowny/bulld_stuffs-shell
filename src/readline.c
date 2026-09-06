@@ -96,7 +96,6 @@ char *readline(const char *prompt) {
         printf("%c",c);
         fflush(stdout);
     }while (c != '\r' && c != '\n');
-    printf("\n");
     fflush(stdout);
     cooked_mode();
     return buffer;
