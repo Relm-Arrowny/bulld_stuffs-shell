@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   //char userInput[1024];
   while(1){
     //fgets(userInput, sizeof(userInput), stdin);
-    char *userInput = readline("$");
+    char *userInput = readline("$ ");
     if (userInput == NULL) {
       break;
     }
