@@ -87,6 +87,8 @@ char *readline(const char *prompt) {
                     fflush(stdout);
                 }
             }
+            printf("\a");
+            fflush(stdout);
             continue;
         }
         if (c != '\r' && c != '\n') {
