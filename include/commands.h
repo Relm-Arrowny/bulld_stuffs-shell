@@ -1,6 +1,7 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+extern const char *builtins[];
 
 int custom_echo(const char ** input);
 int change_dir(const char * path);
