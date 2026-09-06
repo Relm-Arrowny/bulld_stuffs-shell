@@ -115,8 +115,7 @@ int check_type(const char** input){
 
 int check_builtin_type(const char* input){
     if (input == NULL) return 0;
-    size_t count = sizeof(builtins) / sizeof(builtins[0]);
-    for (size_t i = 0; i < count; i++){
+    for (size_t i = 0; builtins[i] != NULL; i++){
         if (strcmp(input, builtins[i]) == 0) 
             return 1;
     }
