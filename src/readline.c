@@ -49,6 +49,8 @@ char *readline(const char *prompt) {
         exit(EXIT_FAILURE);
     }
     printf("%s", prompt);
+    fflush(stdout);
+
     char c;
     do {
         ssize_t bytes_read = read(STDIN_FILENO, &c, 1);
@@ -57,12 +59,20 @@ char *readline(const char *prompt) {
             free(buffer);
             exit(EXIT_FAILURE);
         }
-        if (c != '0') {
+        else if (bytes_read == 0) {
+            cooked_mode();
+            free(buffer);
+            return NULL;
+        }
+        if (c != '\r' && c != '\n') {
             buffer[len++] = c;
             buffer[len] = '\0';
         }
-        printf("$%s",buffer);
+        printf("%c",c);
+        fflush(stdout);
     }while (c != '\r' && c != '\n');
+    printf("\n");
+    fflush(stdout);
     cooked_mode();
     return buffer;
 }

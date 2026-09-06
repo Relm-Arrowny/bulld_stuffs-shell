@@ -16,19 +16,23 @@ int main(int argc, char *argv[]) {
 
   //char userInput[1024];
   while(1){
-    printf("$ ");
     //fgets(userInput, sizeof(userInput), stdin);
-    char *userInput = readline("$ ");
+    char *userInput = readline("$");
+    if (userInput == NULL) {
+      break;
+    }
     userInput[strcspn(userInput, "\n")] = '\0';
     char ** input_list;
     input_list = split_string_quotes(userInput);
 
     if (input_list == NULL || input_list[0] == NULL) {
-        free_string_list(input_list);
-        continue;
+      free_string_list(input_list);
+      free(userInput);
+      continue;
     }
     if (strcmp(input_list[0],"exit")==0){
       free_string_list(input_list);
+      free(userInput);
       break;
     }
     else if (strcmp(input_list[0], "echo") == 0){
@@ -52,6 +56,7 @@ int main(int argc, char *argv[]) {
     else 
       check_and_run(input_list);
     free_string_list(input_list);
+    free(userInput);
   }
   return 0;
 }
