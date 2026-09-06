@@ -82,6 +82,8 @@ char *readline(const char *prompt) {
                         buffer[len++] = temp;
                         printf("%c", temp);
                     }
+                    
+                    printf(" ");
                     fflush(stdout);
                 }
             }
