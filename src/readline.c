@@ -159,9 +159,10 @@ char *readline(const char *prompt) {
                 
                 printf("\n");
                 for (int i = 0; matches[i] != NULL; i++){
-                    if (i>0 && strcmp(matches[i], matches[i - 1]) != 0){
-                        printf("%s\t", matches[i]);
+                    if (i>0 && strcmp(matches[i], matches[i - 1]) == 0){
+                        continue;
                     }
+                    printf("%s\t", matches[i]);
                 }
                 printf("\n$ %s",buffer);
                 fflush(stdout);
