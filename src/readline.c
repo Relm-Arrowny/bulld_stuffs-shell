@@ -149,11 +149,10 @@ char *readline(const char *prompt) {
 
             qsort(matches, matched, sizeof(char *), compare_strings);
             int unique = 0;
-            matches[unique++]= matches[0];
+            matches[unique]= matches[0];
             for (int i = 1; matches[i] != NULL; i++){
                 if (strcmp(matches[i], matches[unique]) == 0){
-
-                    fflush(stdout);
+                    free(matches[i]);
                 }
                 else{
                     matches[unique++]= matches[i];
@@ -168,7 +167,7 @@ char *readline(const char *prompt) {
             else if( matched>1 && last_char == '\t') {
                 printf("\n");
                 for (int i = 0; matches[i] != NULL; i++){
-                    printf("%s\t", matches[i]);
+                    printf("%s ", matches[i]);
                 }
                 printf("\n$ %s",buffer);
                 fflush(stdout);
