@@ -75,7 +75,6 @@ char *readline(const char *prompt) {
     fflush(stdout);
     char c;
     do {
-       
         ssize_t bytes_read = read(STDIN_FILENO, &c, 1);
         if (bytes_read < 0) {
             perror("read");
@@ -160,8 +159,19 @@ char *readline(const char *prompt) {
             matches[unique] = NULL;
             matched = unique;
             fflush(stdout);
-            if (matched==1 && last_char != '\t'){
+            if (matched==1){
                 output_match_command(buffer, &len, matches[0]);
+            }
+            else if ( matched>1 && last_char != '\t'){
+                int common_len = 0;
+                char *partial_match;
+                partial_match = malloc(4096);
+                while (matches[0][common_len] != '\0' &&
+                    matches[0][common_len] == matches[matched - 1][common_len]) {
+                    partial_match[common_len] = matches[0][common_len];
+                    common_len++;
+                }
+                output_match_command(buffer, &len, partial_match);
             }
             else if( matched>1 && last_char == '\t') {
                 printf("\n");
