@@ -56,7 +56,6 @@ void raw_mode(){
 
 char *readline(const char *prompt) {
     raw_mode();
-    int matched = 0;
     char *buffer = NULL;
     int len = 0;
     char last_char = '\0';
@@ -97,6 +96,7 @@ char *readline(const char *prompt) {
                 fflush(stdout);
                 continue;
             }
+            int matched = 0;
             char **matches = calloc(capacity, sizeof(char *));
             if (matches == NULL) {
                 return NULL;
@@ -116,33 +116,33 @@ char *readline(const char *prompt) {
                 
             }
 
-            // char *path_env = getenv("PATH");
-            // if (path_env == NULL || *path_env == '\0') {
-            //     continue;
-            // }       
-            // char ** path_list = split_string(path_env, ":");      
-            // for (int i = 0; path_list[i] !=NULL;i++){
-            //     DIR* directory = opendir(path_list[i]);
-            //     if (directory == NULL) {
-            //         continue;
-            //     }                   
-            //     struct dirent* entry = NULL;
-            //     while ((entry = readdir(directory)) != NULL) {
-            //         if (strncmp(entry->d_name, buffer, len) == 0) {
+            char *path_env = getenv("PATH");
+            if (path_env == NULL || *path_env == '\0') {
+                continue;
+            }       
+            char ** path_list = split_string(path_env, ":");      
+            for (int i = 0; path_list[i] !=NULL;i++){
+                DIR* directory = opendir(path_list[i]);
+                if (directory == NULL) {
+                    continue;
+                }                   
+                struct dirent* entry = NULL;
+                while ((entry = readdir(directory)) != NULL) {
+                    if (strncmp(entry->d_name, buffer, len) == 0) {
 
-            //             matches[matched] = strdup(entry->d_name);
-            //             matched++;
-            //             matches[matched] = NULL;
-            //             if (matched >= capacity) {
-            //                 matches = increase_string_list_capacity(matches, &capacity, matched);
-            //             }
-            //         }
-            //     }
-            //     closedir(directory);
-            // }
+                        matches[matched] = strdup(entry->d_name);
+                        matched++;
+                        matches[matched] = NULL;
+                        if (matched >= capacity) {
+                            matches = increase_string_list_capacity(matches, &capacity, matched);
+                        }
+                    }
+                }
+                closedir(directory);
+            }
 
-            // free_string_list(path_list);
-            if (!matched || (last_char != '\t' && matched>1)) {
+            free_string_list(path_list);
+            if (!matched ||( matched>1 && last_char != '\t')) {
                 printf("\a");
                 fflush(stdout);
             }
@@ -159,9 +159,10 @@ char *readline(const char *prompt) {
                 fflush(stdout);
             }
             free_string_list(matches);
+            last_char = c;
             continue;
         }
-        if (c != '\r' && c != '\n') {
+        if (c != '\r' && c != '\n' ) {
             buffer[len++] = c;
             buffer[len] = '\0';
         }
