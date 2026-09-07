@@ -112,10 +112,13 @@ char *readline(const char *prompt) {
                 return NULL;
             }
 
+            char *last_space = strrchr(buffer, ' ');
+            char *prefix = (last_space != NULL) ? last_space + 1 : buffer;
+            int prefix_len = strlen(prefix);
 
             //builtins
             for (int i = 0; builtins[i] != NULL; i++) {
-                if (strncmp(builtins[i], buffer, len) == 0) {
+                if (strncmp(builtins[i], prefix, prefix_len) == 0) {
                     matches[matched] = strdup(builtins[i]);
                     matched++;
                     matches[matched] = NULL;
@@ -138,7 +141,7 @@ char *readline(const char *prompt) {
                 }                   
                 struct dirent* entry = NULL;
                 while ((entry = readdir(directory)) != NULL) {
-                    if (strncmp(entry->d_name, buffer, len) == 0) {
+                    if (strncmp(entry->d_name, prefix, prefix_len) == 0) {
 
                         matches[matched] = strdup(entry->d_name);
                         matched++;
