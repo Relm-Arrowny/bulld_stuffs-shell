@@ -155,7 +155,7 @@ char *readline(const char *prompt) {
                     free(matches[i]);
                 }
                 else{
-                    matches[unique++]= matches[i];
+                    matches[++unique]= matches[i];
                 }
             }
             matches[unique] = NULL;
