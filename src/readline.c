@@ -158,7 +158,7 @@ char *readline(const char *prompt) {
                     matches[++unique]= matches[i];
                 }
             }
-            matches[unique] = NULL;
+            matches[++unique] = NULL;
             matched = unique;
             fflush(stdout);
             if (matched==1 && last_char != '\t'){
