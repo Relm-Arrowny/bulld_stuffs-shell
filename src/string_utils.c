@@ -1,16 +1,18 @@
 
 #include "string_utils.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <linux/limits.h>
 #include <string.h>
+
 
 char **split_string(const char * str,const char *delim){
     if (str ==NULL || delim == NULL)
         return NULL;
     size_t capacity = 4;
     size_t count = 0;
- 
+    
     char **result = calloc(capacity , sizeof(char*));
     if (result == NULL) {
         return NULL;
@@ -122,3 +124,17 @@ void free_string_list(char **list) {
     }
     free(list);
 }
+
+char ** increase_string_list_capacity(char **list, int *capacity, int current_size)
+{
+
+    *capacity *= 2;
+    char **temp = realloc(list, *capacity * sizeof(char *));
+    if (temp == NULL) {
+        perror("realloc");
+        free_string_list(list);
+        exit(EXIT_FAILURE);
+    }
+    return temp;
+;
+}   

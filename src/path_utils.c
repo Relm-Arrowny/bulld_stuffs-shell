@@ -34,7 +34,8 @@ char *check_typeDefaultPath(const char* input){
     }
     const char *path_env = getenv("PATH");
     if (path_env == NULL || *path_env == '\0') {
-        return NULL;
+                return NULL;
+                
     }
 
     return check_typePath(path_env, input);

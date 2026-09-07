@@ -15,17 +15,15 @@ static int atexit_registered = 0;
 static int is_raw_mode = 0;
 
 
-static void match_commands( char *buffer, int *len, const char *match){
-     if (strncmp(match, buffer, *len) == 0) {
-        for (int j = *len; j< strlen(match); j++) {
-            char temp = match[j];
-            buffer[(*len)++] = temp;
-            printf("%c", temp);
-        }
-        buffer[(*len)++] = ' ';
-        printf(" ");
-        fflush(stdout);
+static void output_match_command( char *buffer, int *len, const char *match){
+    for (int j = *len; j< strlen(match); j++) {
+        char temp = match[j];
+        buffer[(*len)++] = temp;
+        printf("%c", temp);
     }
+    buffer[(*len)++] = ' ';
+    printf(" ");
+    fflush(stdout);
 }
 void cooked_mode() {
     if (!is_raw_mode) {
@@ -61,6 +59,9 @@ char *readline(const char *prompt) {
     int matched = 0;
     char *buffer = NULL;
     int len = 0;
+    char last_char = '\0';
+    int capacity = 4;
+    
     buffer = malloc(4096);
     if (buffer == NULL) {
         perror("malloc");
@@ -70,6 +71,7 @@ char *readline(const char *prompt) {
     fflush(stdout);
     char c;
     do {
+       
         ssize_t bytes_read = read(STDIN_FILENO, &c, 1);
         if (bytes_read < 0) {
             perror("read");
@@ -95,43 +97,68 @@ char *readline(const char *prompt) {
                 fflush(stdout);
                 continue;
             }
+            char **matches = calloc(capacity, sizeof(char *));
+            if (matches == NULL) {
+                return NULL;
+            }
+
+
             //builtins
             for (int i = 0; builtins[i] != NULL; i++) {
                 if (strncmp(builtins[i], buffer, len) == 0) {
-                    match_commands(buffer, &len, builtins[i]);
-                    matched = 1;
-                    break;
+                    matches[matched] = strdup(builtins[i]);
+                    matched++;
+                    matches[matched] = NULL;
+                    if (matched >= capacity) {
+                        matches = increase_string_list_capacity(matches, &capacity, matched);
+                    }
                 }
                 
             }
-            if (matched>0) {
-                continue;
-            }
-            char *path_env = getenv("PATH");
-            if (path_env == NULL || *path_env == '\0') {
-                continue;
-            }       
-            char ** path_list = split_string(path_env, ":");      
-            for (int i = 0; path_list[i] !=NULL;i++){
-                DIR* directory = opendir(path_list[i]);
-                if (directory == NULL) {
-                    continue;
-                }                   
-                struct dirent* entry = NULL;
-                while ((entry = readdir(directory)) != NULL) {
-                    if (strncmp(entry->d_name, buffer, len) == 0) {
-                        match_commands(buffer, &len, entry->d_name);
-                        matched = 1;
-                        break;
-                    }
-                }
-                closedir(directory);
-            }      
-            free_string_list(path_list);
-            if (!matched) {
+
+            // char *path_env = getenv("PATH");
+            // if (path_env == NULL || *path_env == '\0') {
+            //     continue;
+            // }       
+            // char ** path_list = split_string(path_env, ":");      
+            // for (int i = 0; path_list[i] !=NULL;i++){
+            //     DIR* directory = opendir(path_list[i]);
+            //     if (directory == NULL) {
+            //         continue;
+            //     }                   
+            //     struct dirent* entry = NULL;
+            //     while ((entry = readdir(directory)) != NULL) {
+            //         if (strncmp(entry->d_name, buffer, len) == 0) {
+
+            //             matches[matched] = strdup(entry->d_name);
+            //             matched++;
+            //             matches[matched] = NULL;
+            //             if (matched >= capacity) {
+            //                 matches = increase_string_list_capacity(matches, &capacity, matched);
+            //             }
+            //         }
+            //     }
+            //     closedir(directory);
+            // }
+
+            // free_string_list(path_list);
+            if (!matched || (last_char != '\t' && matched>1)) {
                 printf("\a");
                 fflush(stdout);
             }
+            else if (matched==1){
+                output_match_command(buffer, &len, matches[0]);
+            }
+            else{
+                
+                printf("\n");
+                for (int i = 0; matches[i] != NULL; i++){
+                    printf("%s\t", matches[i]);
+                }
+                printf("\n$ %s",buffer);
+                fflush(stdout);
+            }
+            free_string_list(matches);
             continue;
         }
         if (c != '\r' && c != '\n') {
@@ -140,7 +167,9 @@ char *readline(const char *prompt) {
         }
         printf("%c",c);
         fflush(stdout);
+        last_char = c;
     }while (c != '\r' && c != '\n');
+
     fflush(stdout);
     cooked_mode();
     return buffer;
