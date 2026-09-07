@@ -14,6 +14,11 @@ static struct termios orig_termios;
 static int atexit_registered = 0;
 static int is_raw_mode = 0;
 
+static int compare_strings(const void *a, const void *b) {
+    const char *str_a = *(const char **)a;
+    const char *str_b = *(const char **)b;
+    return strcmp(str_a, str_b);
+}
 
 static void output_match_command( char *buffer, int *len, const char *match){
     for (int j = *len; j< strlen(match); j++) {
@@ -150,10 +155,13 @@ char *readline(const char *prompt) {
                 output_match_command(buffer, &len, matches[0]);
             }
             else{
+                qsort(matches, matched, sizeof(char *), compare_strings);
                 
                 printf("\n");
                 for (int i = 0; matches[i] != NULL; i++){
-                    printf("%s\t", matches[i]);
+                    if (i>0 && strcmp(matches[i], matches[i - 1]) != 0){
+                        printf("%s\t", matches[i]);
+                    }
                 }
                 printf("\n$ %s",buffer);
                 fflush(stdout);
