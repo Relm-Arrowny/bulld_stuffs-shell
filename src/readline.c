@@ -20,16 +20,22 @@ static int compare_strings(const void *a, const void *b) {
     return strcmp(str_a, str_b);
 }
 
-static void output_match_command( char *buffer, int *len, const char *match){
+static void output_partial_match_command( char *buffer, int *len, const char *match){
     for (int j = *len; j< strlen(match); j++) {
         char temp = match[j];
         buffer[(*len)++] = temp;
         printf("%c", temp);
     }
+    fflush(stdout);
+}
+
+static void output_match_command( char *buffer, int *len, const char *match){
+    output_partial_match_command(buffer, len, match );
     buffer[(*len)++] = ' ';
     printf(" ");
     fflush(stdout);
 }
+
 void cooked_mode() {
     if (!is_raw_mode) {
         return;
@@ -171,7 +177,7 @@ char *readline(const char *prompt) {
                     partial_match[common_len] = matches[0][common_len];
                     common_len++;
                 }
-                output_match_command(buffer, &len, partial_match);
+                output_partial_match_command(buffer, &len, partial_match);
             }
             else if( matched>1 && last_char == '\t') {
                 printf("\n");
