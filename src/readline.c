@@ -177,6 +177,7 @@ char *readline(const char *prompt) {
                     partial_match[common_len] = matches[0][common_len];
                     common_len++;
                 }
+                partial_match[common_len] = '\0';
                 output_partial_match_command(buffer, &len, partial_match);
             }
             else if( matched>1 && last_char == '\t') {
