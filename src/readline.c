@@ -178,6 +178,8 @@ char *readline(const char *prompt) {
                     common_len++;
                 }
                 partial_match[common_len] = '\0';
+                printf("\a");
+                fflush(stdout);
                 output_partial_match_command(buffer, &len, partial_match);
             }
             else if( matched>1 && last_char == '\t') {
