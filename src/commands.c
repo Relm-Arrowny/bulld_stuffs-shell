@@ -14,7 +14,7 @@
 #include "path_utils.h"
 #include "redirection.h"
 
-const char *builtins[] = {"exit", "echo", "type", "pwd", "cd", "echhh", NULL};
+const char *builtins[] = {"exit", "echo", "type", "pwd", "cd", NULL};
 
 int custom_echo(const char **input)
 {

@@ -145,26 +145,36 @@ char *readline(const char *prompt) {
                 }
                 closedir(directory);
             }
-
             free_string_list(path_list);
-            if (!matched ||( matched>1 && last_char != '\t')) {
-                printf("\a");
-                fflush(stdout);
+
+            qsort(matches, matched, sizeof(char *), compare_strings);
+            int unique = 0;
+            matches[unique++]= matches[0];
+            for (int i = 1; matches[i] != NULL; i++){
+                if (strcmp(matches[i], matches[unique]) == 0){
+
+                    fflush(stdout);
+                }
+                else{
+                    matches[unique++]= matches[i];
+                }
             }
-            else if (matched==1){
+            matches[unique] = NULL;
+            matched = unique;
+            fflush(stdout);
+            if (matched==1 && last_char != '\t'){
                 output_match_command(buffer, &len, matches[0]);
             }
-            else{
-                qsort(matches, matched, sizeof(char *), compare_strings);
-                
+            else if( matched>1 && last_char == '\t') {
                 printf("\n");
                 for (int i = 0; matches[i] != NULL; i++){
-                    if (i>0 && strcmp(matches[i], matches[i - 1]) == 0){
-                        continue;
-                    }
                     printf("%s\t", matches[i]);
                 }
                 printf("\n$ %s",buffer);
+                fflush(stdout);
+            }
+            else{
+                printf("\a");
                 fflush(stdout);
             }
             free_string_list(matches);
