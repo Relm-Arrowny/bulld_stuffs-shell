@@ -20,8 +20,8 @@ static int compare_strings(const void *a, const void *b) {
     return strcmp(str_a, str_b);
 }
 
-static void output_partial_match_command( char *buffer, int *len, const char *match){
-    for (int j = *len; j< strlen(match); j++) {
+static void output_partial_match_command( char *buffer, int *len, const char *match, int prefix_len){
+    for (int j = prefix_len; j< strlen(match); j++) {
         char temp = match[j];
         buffer[(*len)++] = temp;
         printf("%c", temp);
@@ -29,8 +29,8 @@ static void output_partial_match_command( char *buffer, int *len, const char *ma
     fflush(stdout);
 }
 
-static void output_match_command( char *buffer, int *len, const char *match){
-    output_partial_match_command(buffer, len, match );
+static void output_match_command( char *buffer, int *len, const char *match, int prefix_len){
+    output_partial_match_command(buffer, len, match,prefix_len );
     buffer[(*len)++] = ' ';
     printf(" ");
     fflush(stdout);
@@ -186,7 +186,7 @@ char *readline(const char *prompt) {
             matched = unique;
             fflush(stdout);
             if (matched==1){
-                output_match_command(buffer, &len, matches[0]);
+                output_match_command(buffer, &len, matches[0],prefix_len);
             }
             else if ( matched>1 && last_char != '\t'){
                 int common_len = 0;
@@ -200,7 +200,7 @@ char *readline(const char *prompt) {
                 partial_match[common_len] = '\0';
                 printf("\a");
                 fflush(stdout);
-                output_partial_match_command(buffer, &len, partial_match);
+                output_partial_match_command(buffer, &len, partial_match,prefix_len);
             }
             else if( matched>1 && last_char == '\t') {
                 printf("\n");
