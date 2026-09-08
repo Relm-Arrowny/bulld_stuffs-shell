@@ -1,0 +1,10 @@
+if user hit tab and there is only 1 match does auto complete
+
+else if there is more than one match 
+
+    if this is the first time tab is hit 
+        make a bip sound
+    else
+        print out the matches in a new line and in alphabetical order
+        restore the buffer as before. 
+ 

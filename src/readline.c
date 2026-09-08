@@ -92,6 +92,7 @@ char *readline(const char *prompt) {
             free(buffer);
             return NULL;
         }
+        //do back space
         if (c == 127 || c == '\b'){
             if (len>0){
                 buffer[--len] = '\0';
@@ -100,77 +101,105 @@ char *readline(const char *prompt) {
             }
             continue;
         }
+        // handle tab
         if (c == '\t') {
+
             if (len == 0){
                 printf("\a");
                 fflush(stdout);
                 continue;
             }
+            
             int matched = 0;
             char **matches = calloc(capacity, sizeof(char *));
             if (matches == NULL) {
                 return NULL;
             }
 
+            // split the command when there is space
             char *last_space = strrchr(buffer, ' ');
             char *prefix = (last_space != NULL) ? last_space + 1 : buffer;
             int prefix_len = strlen(prefix);
 
-            //builtins
-            for (int i = 0; builtins[i] != NULL; i++) {
-                if (strncmp(builtins[i], prefix, prefix_len) == 0) {
-                    matches[matched] = strdup(builtins[i]);
-                    matched++;
-                    matches[matched] = NULL;
-                    if (matched >= capacity) {
-                        matches = increase_string_list_capacity(matches, &capacity, matched);
+            if (last_space == NULL){
+                //builtins
+                for (int i = 0; builtins[i] != NULL; i++) {
+                    if (strncmp(builtins[i], prefix, prefix_len) == 0) {
+                        matches[matched] = strdup(builtins[i]);
+                        matched++;
+                        matches[matched] = NULL;
+                        if (matched >= capacity) {
+                            matches = increase_string_list_capacity(matches, &capacity, matched);
+                        }
                     }
+                    
                 }
-                
-            }
-
-            char *path_env = getenv("PATH");
-            if (path_env == NULL || *path_env == '\0') {
-                continue;
-            }       
-            char ** path_list = split_string(path_env, ":");      
-            for (int i = 0; path_list[i] !=NULL;i++){
-                DIR* directory = opendir(path_list[i]);
-                if (directory == NULL) {
+                //in path
+                char *path_env = getenv("PATH");
+                if (path_env == NULL || *path_env == '\0') {
                     continue;
-                }                   
-                struct dirent* entry = NULL;
-                while ((entry = readdir(directory)) != NULL) {
-                    if (strncmp(entry->d_name, buffer, len) == 0) {
-
-                        matches[matched] = strdup(entry->d_name);
-                        matched++;
-                        matches[matched] = NULL;
-                        if (matched >= capacity) {
-                            matches = increase_string_list_capacity(matches, &capacity, matched);
-                        }
-                    }
-                }
-                closedir(directory);
-            }
-            free_string_list(path_list);
-            DIR *directory = opendir(".");
-            if (directory != NULL) {
-                struct dirent *entry;
-                while ((entry = readdir(directory)) != NULL) {
-                    if (entry->d_name[0] == '.' && prefix[0] != '.') {
+                }       
+                char ** path_list = split_string(path_env, ":");      
+                for (int i = 0; path_list[i] !=NULL;i++){
+                    DIR* directory = opendir(path_list[i]);
+                    if (directory == NULL) {
                         continue;
-                    }
-                    if (strncmp(entry->d_name, prefix, prefix_len) == 0) {
-                        matches[matched] = strdup(entry->d_name);
-                        matched++;
-                        matches[matched] = NULL;
-                        if (matched >= capacity) {
-                            matches = increase_string_list_capacity(matches, &capacity, matched);
+                    }                   
+                    struct dirent* entry = NULL;
+                    while ((entry = readdir(directory)) != NULL) {
+                        if (strncmp(entry->d_name, buffer, len) == 0) {
+
+                            matches[matched] = strdup(entry->d_name);
+                            matched++;
+                            matches[matched] = NULL;
+                            if (matched >= capacity) {
+                                matches = increase_string_list_capacity(matches, &capacity, matched);
+                            }
                         }
                     }
+                    closedir(directory);
                 }
-                closedir(directory);
+                free_string_list(path_list);
+            }
+            else{
+                char *last_slash = strrchr(buffer, '/');
+                char *path_prefix = (last_slash != NULL) ? last_slash + 1 : buffer;
+                int path_prefix_len = strlen(path_prefix);
+                DIR *directory = NULL;
+
+                if (last_slash == NULL){
+                    directory = opendir(".");
+
+                }
+                else{
+                    char dir[PATH_MAX];
+                    int dir_len = (int)(last_slash - prefix);
+                    char *dir_path = strndup(prefix, dir_len);
+                    directory = opendir(dir_path);
+                    free(dir_path);
+                }    
+                if (directory != NULL) {
+                    struct dirent *entry;
+                    while ((entry = readdir(directory)) != NULL) {
+                        if (entry->d_name[0] == '.' && path_prefix[0] != '.') {
+                            continue;
+                        }
+                        if (strncmp(entry->d_name, path_prefix, path_prefix_len) == 0) {
+                            matches[matched] = strdup(entry->d_name);
+                            // printf("%s", matches[matched]);
+                            // fflush(stdout);
+                            matched++;
+                            matches[matched] = NULL;
+
+                            if (matched >= capacity) {
+                                matches = increase_string_list_capacity(matches, &capacity, matched);
+                            }
+                        }
+                    }
+                    closedir(directory);
+                    prefix_len = path_prefix_len;
+                }
+
             }
             qsort(matches, matched, sizeof(char *), compare_strings);
             int unique = 0;
