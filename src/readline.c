@@ -129,7 +129,7 @@ char *readline(const char *prompt) {
                 
             }
             
-            char *path_env = getenv("PATH");
+            char *path_env = getenv(".");
             
             if (path_env == NULL || *path_env == '\0') {
                 continue;
