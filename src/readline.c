@@ -129,12 +129,11 @@ char *readline(const char *prompt) {
                 
             }
             
-            //char *path_env = getenv("PATH");
-            char path_env[PATH_MAX];
-            getcwd(path_env, sizeof(path_env));
-            // if (path_env == NULL || *path_env == '\0') {
-            //     continue;
-            // }       
+            char *path_env = getenv("PATH");
+            
+            if (path_env == NULL || *path_env == '\0') {
+                continue;
+            }       
             char ** path_list = split_string(path_env, ":");      
             for (int i = 0; path_list[i] !=NULL;i++){
                 DIR* directory = opendir(path_list[i]);
@@ -171,7 +170,7 @@ char *readline(const char *prompt) {
             matched = unique;
             fflush(stdout);
             if (matched==1){
-                output_match_command(buffer, &len, matches[0]);
+                output_match_command(buffer, &prefix_len, matches[0]);
             }
             else if ( matched>1 && last_char != '\t'){
                 int common_len = 0;
