@@ -128,9 +128,8 @@ char *readline(const char *prompt) {
                 }
                 
             }
-            
-            char *path_env = getenv(".");
-            
+
+            char *path_env = getenv("PATH");
             if (path_env == NULL || *path_env == '\0') {
                 continue;
             }       
@@ -142,7 +141,7 @@ char *readline(const char *prompt) {
                 }                   
                 struct dirent* entry = NULL;
                 while ((entry = readdir(directory)) != NULL) {
-                    if (strncmp(entry->d_name, prefix, prefix_len) == 0) {
+                    if (strncmp(entry->d_name, buffer, len) == 0) {
 
                         matches[matched] = strdup(entry->d_name);
                         matched++;
@@ -155,7 +154,24 @@ char *readline(const char *prompt) {
                 closedir(directory);
             }
             free_string_list(path_list);
-
+            DIR *directory = opendir(".");
+            if (directory != NULL) {
+                struct dirent *entry;
+                while ((entry = readdir(directory)) != NULL) {
+                    if (entry->d_name[0] == '.' && prefix[0] != '.') {
+                        continue;
+                    }
+                    if (strncmp(entry->d_name, prefix, prefix_len) == 0) {
+                        matches[matched] = strdup(entry->d_name);
+                        matched++;
+                        matches[matched] = NULL;
+                        if (matched >= capacity) {
+                            matches = increase_string_list_capacity(matches, &capacity, matched);
+                        }
+                    }
+                }
+                closedir(directory);
+            }
             qsort(matches, matched, sizeof(char *), compare_strings);
             int unique = 0;
             for (int i = 0; matches[i] != NULL; i++){
@@ -170,7 +186,7 @@ char *readline(const char *prompt) {
             matched = unique;
             fflush(stdout);
             if (matched==1){
-                output_match_command(buffer, &prefix_len, matches[0]);
+                output_match_command(buffer, &len, matches[0]);
             }
             else if ( matched>1 && last_char != '\t'){
                 int common_len = 0;
