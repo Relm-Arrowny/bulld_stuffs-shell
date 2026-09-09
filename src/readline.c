@@ -163,7 +163,7 @@ char *readline(const char *prompt) {
             }
             else{
                 char *last_slash = strrchr(buffer, '/');
-                char *path_prefix = (last_slash != NULL) ? last_slash + 1 : buffer;
+                char *path_prefix = (last_slash != NULL) ? last_slash + 1 : prefix;
                 int path_prefix_len = strlen(path_prefix);
                 DIR *directory = NULL;
 
