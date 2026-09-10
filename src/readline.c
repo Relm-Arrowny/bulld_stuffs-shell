@@ -130,7 +130,13 @@ static void handle_tab(char *buffer, int *len, char last_char){
                     continue;
                 }
                 if (strncmp(entry->d_name, path_prefix, path_prefix_len) == 0) {
-                    add_to_string_list(&matches,entry->d_name);
+                     char name[PATH_MAX];
+                     if (entry->d_type == DT_DIR) {
+                        snprintf(name, sizeof(name), "%s/", entry->d_name);
+                    } else {
+                        snprintf(name, sizeof(name), "%s", entry->d_name);
+                    }
+                    add_to_string_list(&matches, name);
                 }
             }
             closedir(directory);
