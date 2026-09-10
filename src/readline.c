@@ -62,7 +62,7 @@ void raw_mode(){
 
 
 static void handle_tab(char *buffer, int *len, char last_char){
-    if (len == 0){
+    if (*len == 0){
         printf("\a");
         fflush(stdout);
         return;
@@ -89,7 +89,7 @@ static void handle_tab(char *buffer, int *len, char last_char){
         }
         //in path
         char *path_env = getenv("PATH");
-        if (path_env == NULL || *path_env == '\0') {
+        if (path_env != NULL && *path_env != '\0') {
             char ** path_list = split_string(path_env, ":");      
             for (int i = 0; path_list[i] !=NULL;i++){
                 DIR* directory = opendir(path_list[i]);

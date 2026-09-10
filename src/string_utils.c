@@ -43,7 +43,7 @@ void rm_dup_string_list(StringList *list)
     sort_string_list(list);
     int unique = 0;
     for (int i = 0; list->items[i] != NULL; i++){
-        if (i>0 && strcmp(list->items[i],list->items[i-1]) == 0){
+        if (i>0 && strcmp(list->items[i],list->items[unique-1]) == 0){
             free(list->items[i]);
         }
         else{
