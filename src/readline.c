@@ -65,12 +65,32 @@ void raw_mode(){
     is_raw_mode = 1;
 }
 
+typedef struct {
+    char ** items;
+    int count;
+    int capacity;
+} MatchList;
+
+static void init_matches(MatchList *m){
+    m->capacity = 4;
+    m->count = 0;
+    m->items = calloc(m->capacity,sizeof(char *));
+}
+static void add_match(MatchList *m, const char * str){
+    if (m->items == NULL) return;
+    if (m->count +1 >= m->capacity){
+        m->items = increase_string_list_capacity(m->items, &m->capacity, m->count);
+    }
+    m->items[m->count++] = strdup(str);
+    m->items[m->count] = NULL;
+
+
+}
 char *readline(const char *prompt) {
     raw_mode();
     char *buffer = NULL;
     int len = 0;
     char last_char = '\0';
-    int capacity = 4;
     
     buffer = malloc(4096);
     if (buffer == NULL) {
@@ -99,6 +119,7 @@ char *readline(const char *prompt) {
                 printf("\b \b");
                 fflush(stdout);
             }
+            last_char = c;
             continue;
         }
         // handle tab
@@ -109,10 +130,10 @@ char *readline(const char *prompt) {
                 fflush(stdout);
                 continue;
             }
-            
-            int matched = 0;
-            char **matches = calloc(capacity, sizeof(char *));
-            if (matches == NULL) {
+
+            MatchList matches;
+            init_matches(&matches);
+            if (matches.items == NULL) {
                 return NULL;
             }
 
@@ -125,44 +146,32 @@ char *readline(const char *prompt) {
                 //builtins
                 for (int i = 0; builtins[i] != NULL; i++) {
                     if (strncmp(builtins[i], prefix, prefix_len) == 0) {
-                        matches[matched] = strdup(builtins[i]);
-                        matched++;
-                        matches[matched] = NULL;
-                        if (matched >= capacity) {
-                            matches = increase_string_list_capacity(matches, &capacity, matched);
-                        }
+                        add_match(&matches, builtins[i] );
                     }
                     
                 }
                 //in path
                 char *path_env = getenv("PATH");
                 if (path_env == NULL || *path_env == '\0') {
-                    continue;
-                }       
-                char ** path_list = split_string(path_env, ":");      
-                for (int i = 0; path_list[i] !=NULL;i++){
-                    DIR* directory = opendir(path_list[i]);
-                    if (directory == NULL) {
-                        continue;
-                    }                   
-                    struct dirent* entry = NULL;
-                    while ((entry = readdir(directory)) != NULL) {
-                        if (strncmp(entry->d_name, buffer, len) == 0) {
-
-                            matches[matched] = strdup(entry->d_name);
-                            matched++;
-                            matches[matched] = NULL;
-                            if (matched >= capacity) {
-                                matches = increase_string_list_capacity(matches, &capacity, matched);
+                    char ** path_list = split_string(path_env, ":");      
+                    for (int i = 0; path_list[i] !=NULL;i++){
+                        DIR* directory = opendir(path_list[i]);
+                        if (directory == NULL) {
+                            continue;
+                        }                   
+                        struct dirent* entry = NULL;
+                        while ((entry = readdir(directory)) != NULL) {
+                            if (strncmp(entry->d_name, prefix, prefix_len) == 0) {
+                                add_match(&matches,entry->d_name);
                             }
                         }
+                        closedir(directory);
                     }
-                    closedir(directory);
+                    free_string_list(path_list);
                 }
-                free_string_list(path_list);
             }
             else{
-                char *last_slash = strrchr(buffer, '/');
+                char *last_slash = strrchr(prefix, '/');
                 char *path_prefix = (last_slash != NULL) ? last_slash + 1 : prefix;
                 int path_prefix_len = strlen(path_prefix);
                 DIR *directory = NULL;
@@ -172,9 +181,8 @@ char *readline(const char *prompt) {
 
                 }
                 else{
-                    char dir[PATH_MAX];
                     int dir_len = (int)(last_slash - prefix);
-                    char *dir_path = strndup(prefix, dir_len);
+                    char *dir_path = (dir_len == 0) ? strdup("/") : strndup(prefix, dir_len);
                     directory = opendir(dir_path);
                     free(dir_path);
                 }    
@@ -185,15 +193,7 @@ char *readline(const char *prompt) {
                             continue;
                         }
                         if (strncmp(entry->d_name, path_prefix, path_prefix_len) == 0) {
-                            matches[matched] = strdup(entry->d_name);
-                            // printf("%s", matches[matched]);
-                            // fflush(stdout);
-                            matched++;
-                            matches[matched] = NULL;
-
-                            if (matched >= capacity) {
-                                matches = increase_string_list_capacity(matches, &capacity, matched);
-                            }
+                            add_match(&matches,entry->d_name);
                         }
                     }
                     closedir(directory);
@@ -201,40 +201,43 @@ char *readline(const char *prompt) {
                 }
 
             }
-            qsort(matches, matched, sizeof(char *), compare_strings);
+            qsort(matches.items, matches.count, sizeof(char *), compare_strings);
             int unique = 0;
-            for (int i = 0; matches[i] != NULL; i++){
-                if (i>0 && strcmp(matches[i], matches[unique-1]) == 0){
-                    free(matches[i]);
+            for (int i = 0; matches.items[i] != NULL; i++){
+                if (i>0 && strcmp( matches.items[i],  matches.items[unique-1]) == 0){
+                    free( matches.items[i]);
                 }
                 else{
-                    matches[unique++]= matches[i];
+                    matches.items[unique++] = matches.items[i];
                 }
             }
-            matches[unique] = NULL;
-            matched = unique;
+            matches.items[unique] = NULL;
+            matches.count = unique;
             fflush(stdout);
-            if (matched==1){
-                output_match_command(buffer, &len, matches[0],prefix_len);
+            if (matches.count==1){
+                output_match_command(buffer, &len,  matches.items[0],prefix_len);
             }
-            else if ( matched>1 && last_char != '\t'){
+            else if ( matches.count>1 && last_char != '\t'){
                 int common_len = 0;
                 char *partial_match;
                 partial_match = malloc(4096);
-                while (matches[0][common_len] != '\0' &&
-                    matches[0][common_len] == matches[matched - 1][common_len]) {
-                    partial_match[common_len] = matches[0][common_len];
-                    common_len++;
+                if (partial_match != NULL) {
+                    while ( matches.items[0][common_len] != '\0' &&
+                        matches.items[0][common_len] ==  matches.items[ matches.count - 1][common_len]) {
+                        partial_match[common_len] = matches.items[0][common_len];
+                        common_len++;
+                    }
+                    partial_match[common_len] = '\0';
+                    printf("\a");
+                    fflush(stdout);
+                    output_partial_match_command(buffer, &len, partial_match,prefix_len);
+                    free(partial_match);
                 }
-                partial_match[common_len] = '\0';
-                printf("\a");
-                fflush(stdout);
-                output_partial_match_command(buffer, &len, partial_match,prefix_len);
             }
-            else if( matched>1 && last_char == '\t') {
+            else if( matches.count>1 && last_char == '\t') {
                 printf("\n");
-                for (int i = 0; matches[i] != NULL; i++){
-                    printf("%s ", matches[i]);
+                for (int i = 0; matches.items[i] != NULL; i++){
+                    printf("%s ", matches.items[i]);
                 }
                 printf("\n$ %s",buffer);
                 fflush(stdout);
@@ -243,7 +246,7 @@ char *readline(const char *prompt) {
                 printf("\a");
                 fflush(stdout);
             }
-            free_string_list(matches);
+            free_string_list(matches.items);
             last_char = c;
             continue;
         }
