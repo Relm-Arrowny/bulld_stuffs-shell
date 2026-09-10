@@ -26,8 +26,10 @@ static void output_partial_match_command( char *buffer, int *len, const char *ma
 
 static void output_match_command( char *buffer, int *len, const char *match, int prefix_len){
     output_partial_match_command(buffer, len, match,prefix_len );
-    buffer[(*len)++] = ' ';
-    printf(" ");
+    if (buffer[*len] != '/'){
+        buffer[(*len)++] = ' ';
+        printf(" ");
+    }
     fflush(stdout);
 }
 
