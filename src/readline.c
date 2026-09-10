@@ -178,18 +178,7 @@ char *readline(const char *prompt) {
                 }
 
             }
-            sort_string_list(&matches);
-            int unique = 0;
-            for (int i = 0; matches.items[i] != NULL; i++){
-                if (i>0 && strcmp( matches.items[i],  matches.items[unique-1]) == 0){
-                    free( matches.items[i]);
-                }
-                else{
-                    matches.items[unique++] = matches.items[i];
-                }
-            }
-            matches.items[unique] = NULL;
-            matches.count = unique;
+            rm_dup_string_list(&matches);
             fflush(stdout);
             if (matches.count==1){
                 output_match_command(buffer, &len,  matches.items[0],prefix_len);
