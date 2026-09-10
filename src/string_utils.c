@@ -116,8 +116,38 @@ char **split_string_quotes(const char* input)
     return tokens;
 }
 
+void init_string_list(StringList *list)
+{
+    list->capacity = 4;
+    list->count = 0;
+    list->items = calloc(list->capacity,sizeof(char *));
 
-void free_string_list(char **list) {
+}
+
+void add_to_string_list(StringList *list, const char *str)
+{
+    if(list->capacity <= list->count + 1){
+        list->items = increase_string_list_capacity(list->items, &list->capacity,list->count);
+    }
+    list->items[list->count++] = strdup(str);
+    list->items[list->count] = NULL;
+}
+
+static int compare_strings(const void *a, const void *b) {
+    const char *str_a = *(const char **)a;
+    const char *str_b = *(const char **)b;
+    return strcmp(str_a, str_b);
+}
+
+void sort_string_list(StringList  *list)
+{
+    if (list && list->items && list->count > 1){
+        qsort(list->items, list->count, sizeof(char *), compare_strings);
+    }
+}
+
+void free_string_list(char **list)
+{
     if (list == NULL) return;
     for (size_t i = 0; list[i] != NULL; i++) {
         free(list[i]);

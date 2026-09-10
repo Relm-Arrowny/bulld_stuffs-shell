@@ -14,11 +14,6 @@ static struct termios orig_termios;
 static int atexit_registered = 0;
 static int is_raw_mode = 0;
 
-static int compare_strings(const void *a, const void *b) {
-    const char *str_a = *(const char **)a;
-    const char *str_b = *(const char **)b;
-    return strcmp(str_a, str_b);
-}
 
 static void output_partial_match_command( char *buffer, int *len, const char *match, int prefix_len){
     for (int j = prefix_len; j< strlen(match); j++) {
@@ -65,27 +60,9 @@ void raw_mode(){
     is_raw_mode = 1;
 }
 
-typedef struct {
-    char ** items;
-    int count;
-    int capacity;
-} MatchList;
-
-static void init_matches(MatchList *m){
-    m->capacity = 4;
-    m->count = 0;
-    m->items = calloc(m->capacity,sizeof(char *));
-}
-static void add_match(MatchList *m, const char * str){
-    if (m->items == NULL) return;
-    if (m->count +1 >= m->capacity){
-        m->items = increase_string_list_capacity(m->items, &m->capacity, m->count);
-    }
-    m->items[m->count++] = strdup(str);
-    m->items[m->count] = NULL;
 
 
-}
+
 char *readline(const char *prompt) {
     raw_mode();
     char *buffer = NULL;
@@ -131,8 +108,8 @@ char *readline(const char *prompt) {
                 continue;
             }
 
-            MatchList matches;
-            init_matches(&matches);
+            StringList matches;
+            init_string_list(&matches);
             if (matches.items == NULL) {
                 return NULL;
             }
@@ -146,7 +123,7 @@ char *readline(const char *prompt) {
                 //builtins
                 for (int i = 0; builtins[i] != NULL; i++) {
                     if (strncmp(builtins[i], prefix, prefix_len) == 0) {
-                        add_match(&matches, builtins[i] );
+                        add_to_string_list(&matches, builtins[i] );
                     }
                     
                 }
@@ -162,7 +139,7 @@ char *readline(const char *prompt) {
                         struct dirent* entry = NULL;
                         while ((entry = readdir(directory)) != NULL) {
                             if (strncmp(entry->d_name, prefix, prefix_len) == 0) {
-                                add_match(&matches,entry->d_name);
+                                add_to_string_list(&matches,entry->d_name);
                             }
                         }
                         closedir(directory);
@@ -193,7 +170,7 @@ char *readline(const char *prompt) {
                             continue;
                         }
                         if (strncmp(entry->d_name, path_prefix, path_prefix_len) == 0) {
-                            add_match(&matches,entry->d_name);
+                            add_to_string_list(&matches,entry->d_name);
                         }
                     }
                     closedir(directory);
@@ -201,7 +178,7 @@ char *readline(const char *prompt) {
                 }
 
             }
-            qsort(matches.items, matches.count, sizeof(char *), compare_strings);
+            sort_string_list(&matches);
             int unique = 0;
             for (int i = 0; matches.items[i] != NULL; i++){
                 if (i>0 && strcmp( matches.items[i],  matches.items[unique-1]) == 0){
