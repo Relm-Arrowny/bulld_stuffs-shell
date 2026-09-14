@@ -83,9 +83,9 @@ static void handle_tab(char *buffer, int *len, char last_char){
 
     if (last_space == NULL){
         //builtins
-        for (int i = 0; builtins[i] != NULL; i++) {
-            if (strncmp(builtins[i], prefix, prefix_len) == 0) {
-                add_to_string_list(&matches, builtins[i] );
+        for (int i = 0; builtin_table[i].name != NULL; i++) {
+            if (strncmp(builtin_table[i].name, prefix, prefix_len) == 0) {
+                add_to_string_list(&matches,builtin_table[i].name );
             }
             
         }

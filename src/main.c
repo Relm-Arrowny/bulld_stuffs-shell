@@ -10,13 +10,7 @@
 #include "redirection.h"
 #include "readline.h"
 int main(int argc, char *argv[]) {
-  // Flush after every printf
-  //setbuf(stdout, NULL);
-
-
-  //char userInput[1024];
   while(1){
-    //fgets(userInput, sizeof(userInput), stdin);
     char *userInput = readline("$ ");
     if (userInput == NULL) {
       break;
@@ -30,28 +24,10 @@ int main(int argc, char *argv[]) {
       free(userInput);
       continue;
     }
-    if (strcmp(input_list[0],"exit")==0){
-      free_string_list(input_list);
-      free(userInput);
-      break;
-    }
-    else if (strcmp(input_list[0], "echo") == 0){
-      builtin_redirection_wrapper(input_list,custom_echo);
-    }
-    else if (strcmp(input_list[0],"type")== 0){
-      builtin_redirection_wrapper(input_list,check_type);
-      }
-    else if (strcmp(input_list[0],"pwd" )== 0){
-      char cwd[PATH_MAX];
-      if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        printf("%s\n", cwd);
-      } 
-      else {
-        perror("getcwd() error");
-      }
-    }
-    else if (strcmp(input_list[0], "cd")== 0){
-      change_dir(input_list[1]);
+
+    const BuiltinCommand *cmd = find_command(input_list[0]);
+    if (cmd != NULL){
+      cmd->func(input_list);
     }
     else 
       check_and_run(input_list);

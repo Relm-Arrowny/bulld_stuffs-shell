@@ -14,15 +14,36 @@
 #include "path_utils.h"
 #include "redirection.h"
 
-const char *builtins[] = {"exit", "echo","type", "pwd", "cd","complete", NULL};
+const BuiltinCommand builtin_table[] = {
+    {"echo", wrapped_custom_echo},
+    {"type", wrapped_check_type},
+    {"cd"  , wrapped_change_dir},
+    {"pwd", wrapped_print_working_dir},
+    {"exit", custom_exit},
+    {NULL,   NULL}
+};
+
+const BuiltinCommand *find_command(const char *com)
+{
+    for (int i = 0; builtin_table[i].name != NULL; i++){
+        if(strcmp(com ,builtin_table[i].name)==0){
+            return &builtin_table[i];
+        }
+    }
+    return NULL;
+}
 
 int custom_echo(const char **input)
-{
+{    
     for (int i = 1; input[i] !=NULL; i++){
         printf("%s ", input[i]);
     }
     printf("\n");
     return 0;
+}
+
+int wrapped_custom_echo(char **input){
+    return builtin_redirection_wrapper(input,custom_echo);
 }
 
 int change_dir(const char *path)
@@ -61,6 +82,71 @@ int change_dir(const char *path)
 
 }
 
+int wrapped_change_dir(char **input){
+    return change_dir( input[1]);
+}
+
+int check_type(const char** input){
+    if (input == NULL) return 0;
+    char* result = NULL;
+    if (check_builtin_type(input[1])){
+        printf("%s is a shell builtin\n", input[1]);
+        return 1;
+    }
+    else if((result = check_typeDefaultPath(input[1]))!= NULL){
+        printf("%s is %s\n", input[1], result);
+        free(result);
+        return 1;
+    }
+    printf("%s: not found\n", input[1]);
+    return 0;
+
+}
+
+ int wrapped_check_type(char** input){
+    return builtin_redirection_wrapper(input,check_type);
+ }
+
+int check_builtin_type(const char* input){
+    if (input == NULL) return 0;
+    for (size_t i = 0; builtin_table[i].name != NULL; i++){
+        if (strcmp(input, builtin_table[i].name) == 0) 
+            return 1;
+    }
+    return 0;
+}
+
+int print_working_dir(const char** input){
+
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+    printf("%s\n", cwd);
+    } 
+    else {
+    perror("getcwd() error");
+    }
+    return 1;
+}
+int wrapped_print_working_dir(char** input){
+     return builtin_redirection_wrapper(input,print_working_dir);
+
+}
+
+
+
+void noCommand(const char* com){
+    printf("%s: command not found\n", com);
+}
+
+int custom_exit(char ** input){
+    int code = 0;
+    if (input[1] != NULL) {
+        code = atoi(input[1]);
+    }
+    exit(code);
+
+}
+
 
 int check_and_run(char **com)
 {
@@ -94,35 +180,5 @@ int check_and_run(char **com)
 
     }
     return 1;
-}
-
-int check_type(const char** input){
-    if (input == NULL) return 0;
-    char* result = NULL;
-    if (check_builtin_type(input[1])){
-        printf("%s is a shell builtin\n", input[1]);
-        return 1;
-    }
-    else if((result = check_typeDefaultPath(input[1]))!= NULL){
-        printf("%s is %s\n", input[1], result);
-        free(result);
-        return 1;
-    }
-    printf("%s: not found\n", input[1]);
-    return 0;
-
-}
-
-int check_builtin_type(const char* input){
-    if (input == NULL) return 0;
-    for (size_t i = 0; builtins[i] != NULL; i++){
-        if (strcmp(input, builtins[i]) == 0) 
-            return 1;
-    }
-    return 0;
-}
-
-void noCommand(const char* com){
-    printf("%s: command not found\n", com);
 }
 
