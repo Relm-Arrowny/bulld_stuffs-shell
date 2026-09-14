@@ -116,7 +116,7 @@ int print_working_dir(char** input){
 int custom_complete(char **input)
 {
     if (strcmp(input[1], "-p")==0){
-        printf("complete: %s: no completion specification", input[2]);
+        printf("complete: %s: no completion specification\n", input[2]);
     }
     return 0;
 }
