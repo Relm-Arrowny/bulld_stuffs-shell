@@ -13,20 +13,12 @@ const BuiltinCommand *find_command(const char * com);
 
 extern const BuiltinCommand builtin_table[];
 
-int custom_echo(const char ** input);
-int wrapped_custom_echo(char **input);
+int custom_echo( char ** input);
 
-int change_dir(const char * path);
-int wrapped_change_dir(char **input);
+int change_dir(char ** path);
 
-
-int check_type(const char** input);
-int wrapped_check_type(char** input);
-
-int print_working_dir(const char** input);
-int wrapped_print_working_dir(char** input);
-
-int check_builtin_type(const char* input);
+int check_type(char** input);
+int print_working_dir(char** input);
 void noCommand(const char* com);
 
 int custom_exit(char ** input);

@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 
     const BuiltinCommand *cmd = find_command(input_list[0]);
     if (cmd != NULL){
-      cmd->func(input_list);
+      builtin_redirection_wrapper(input_list, cmd->func);
     }
     else 
       check_and_run(input_list);

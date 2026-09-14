@@ -69,14 +69,14 @@ void setup_redirection(char **com)
     }
 }
 
-int builtin_redirection_wrapper(char **com, int (*func)(const char **)){
+int builtin_redirection_wrapper(char **com, int (*func)(char **)){
     int saved_stdout = dup(STDOUT_FILENO); 
     if (saved_stdout < 0) {
         perror("dup failed");
         return -1;
     }
     setup_redirection(com);
-    int success = func((const char **) com);
+    int success = func((char **) com);
     fflush(stdout);
     dup2(saved_stdout, STDOUT_FILENO);
     close(saved_stdout);

@@ -15,10 +15,10 @@
 #include "redirection.h"
 
 const BuiltinCommand builtin_table[] = {
-    {"echo", wrapped_custom_echo},
-    {"type", wrapped_check_type},
-    {"cd"  , wrapped_change_dir},
-    {"pwd", wrapped_print_working_dir},
+    {"echo", custom_echo},
+    {"type", check_type},
+    {"cd"  , change_dir},
+    {"pwd", print_working_dir},
     {"exit", custom_exit},
     {NULL,   NULL}
 };
@@ -33,7 +33,7 @@ const BuiltinCommand *find_command(const char *com)
     return NULL;
 }
 
-int custom_echo(const char **input)
+int custom_echo(char **input)
 {    
     for (int i = 1; input[i] !=NULL; i++){
         printf("%s ", input[i]);
@@ -42,12 +42,11 @@ int custom_echo(const char **input)
     return 0;
 }
 
-int wrapped_custom_echo(char **input){
-    return builtin_redirection_wrapper(input,custom_echo);
-}
 
-int change_dir(const char *path)
+
+int change_dir(char **input)
 {  
+    char *path = input[1];
     char target_path[PATH_MAX];
     if (path == NULL || strcmp(path, "~") == 0) {
         const char *home = getenv("HOME");
@@ -82,14 +81,11 @@ int change_dir(const char *path)
 
 }
 
-int wrapped_change_dir(char **input){
-    return change_dir( input[1]);
-}
-
-int check_type(const char** input){
-    if (input == NULL) return 0;
+int check_type(char** input){
+    if (input == NULL || input[1] == NULL)  return 0;
     char* result = NULL;
-    if (check_builtin_type(input[1])){
+    
+    if (find_command(input[1]) != NULL) {
         printf("%s is a shell builtin\n", input[1]);
         return 1;
     }
@@ -103,20 +99,8 @@ int check_type(const char** input){
 
 }
 
- int wrapped_check_type(char** input){
-    return builtin_redirection_wrapper(input,check_type);
- }
 
-int check_builtin_type(const char* input){
-    if (input == NULL) return 0;
-    for (size_t i = 0; builtin_table[i].name != NULL; i++){
-        if (strcmp(input, builtin_table[i].name) == 0) 
-            return 1;
-    }
-    return 0;
-}
-
-int print_working_dir(const char** input){
+int print_working_dir(char** input){
 
     char cwd[PATH_MAX];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
@@ -127,11 +111,6 @@ int print_working_dir(const char** input){
     }
     return 1;
 }
-int wrapped_print_working_dir(char** input){
-     return builtin_redirection_wrapper(input,print_working_dir);
-
-}
-
 
 
 void noCommand(const char* com){
