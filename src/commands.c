@@ -20,6 +20,7 @@ const BuiltinCommand builtin_table[] = {
     {"cd"  , change_dir},
     {"pwd", print_working_dir},
     {"exit", custom_exit},
+    {"complete", custom_complete},
     {NULL,   NULL}
 };
 
@@ -112,6 +113,13 @@ int print_working_dir(char** input){
     return 1;
 }
 
+int custom_complete(char **input)
+{
+    if (strcmp(input[1], "-p")==0){
+        printf("complete: %s: no completion specification", input[2]);
+    }
+    return 0;
+}
 
 void noCommand(const char* com){
     printf("%s: command not found\n", com);
