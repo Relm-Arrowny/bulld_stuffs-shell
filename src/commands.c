@@ -33,6 +33,21 @@ const BuiltinCommand *find_command(const char *com)
     }
     return NULL;
 }
+static int reg_size = 0;
+static int reg_capacity = 10;
+static CompleteRegister *comp_reg_table = NULL;
+
+CompleteRegister *find_reg_complete(const char *com)
+{
+    if (comp_reg_table == NULL || com == NULL) return NULL;
+    for (int i = 0; i < reg_size; i++) {
+        if (comp_reg_table[i].com != NULL && strcmp(com, comp_reg_table[i].com) == 0) {
+            return &comp_reg_table[i];
+        }
+    }
+    return NULL;
+}
+
 
 int custom_echo(char **input)
 {    
@@ -115,8 +130,36 @@ int print_working_dir(char** input){
 
 int custom_complete(char **input)
 {
+    if (comp_reg_table == NULL) {
+        comp_reg_table = calloc(reg_capacity, sizeof(CompleteRegister));
+    }
     if (strcmp(input[1], "-p")==0){
-        printf("complete: %s: no completion specification\n", input[2]);
+        CompleteRegister * temp_reg = find_reg_complete(input[2]);
+        if (temp_reg!= NULL){
+            printf("complete -C '%s' %s\n", temp_reg->path, temp_reg->com);
+        }
+        else{
+            printf("complete: %s: no completion specification\n", input[2]);
+        }
+    }
+    else if (strcmp(input[1], "-C")==0){
+        if (input[2] == NULL || input[3] == NULL) {
+            return 0; // Missing path or command name
+        }
+
+        if (reg_size >= reg_capacity-1){
+            reg_capacity *= 2;
+            CompleteRegister *temp = realloc(comp_reg_table, reg_capacity *
+                 sizeof(CompleteRegister *));
+            if (temp == NULL) {
+                perror("realloc");
+                return -1;
+            }
+            comp_reg_table = temp;
+        }
+        comp_reg_table[reg_size].path = strdup(input[2]);
+        comp_reg_table[reg_size].com  = strdup(input[3]);
+        reg_size++;
     }
     return 0;
 }

@@ -9,6 +9,11 @@ typedef struct {
     builtin_func func;    
 }BuiltinCommand;
 
+typedef struct {
+    char * com;
+    char * path;
+}CompleteRegister;
+
 const BuiltinCommand *find_command(const char * com);
 
 extern const BuiltinCommand builtin_table[];
