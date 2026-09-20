@@ -82,11 +82,7 @@ static void handle_tab(char *buffer, int *len, char last_char){
     int prefix_len = strlen(prefix);
 
     if (last_space == NULL){
-        CompleteRegister *custom_complete = find_reg_complete(prefix);
-        if(custom_complete !=NULL){
-            char *args[] = {custom_complete->path, NULL};
-            check_and_run(args);
-        }
+      
         //builtins
         for (int i = 0; builtin_table[i].name != NULL; i++) {
             if (strncmp(builtin_table[i].name, prefix, prefix_len) == 0) {
@@ -115,42 +111,49 @@ static void handle_tab(char *buffer, int *len, char last_char){
         }
     }
     else{
-        
-        char *last_slash = strrchr(prefix, '/');
-        char *path_prefix = (last_slash != NULL) ? last_slash + 1 : prefix;
-        int path_prefix_len = strlen(path_prefix);
-        DIR *directory = NULL;
-
-        if (last_slash == NULL){
-            directory = opendir(".");
-
+        *last_space = '\0';
+        CompleteRegister *custom_complete = find_reg_complete(buffer);
+        *last_space = ' ';
+        if(custom_complete !=NULL){
+            char *args[] = {custom_complete->path, NULL};
+            check_and_run(args);
         }
         else{
-            int dir_len = (int)(last_slash - prefix);
-            char *dir_path = (dir_len == 0) ? strdup("/") : strndup(prefix, dir_len);
-            directory = opendir(dir_path);
-            free(dir_path);
-        }    
-        if (directory != NULL) {
-            struct dirent *entry;
-            while ((entry = readdir(directory)) != NULL) {
-                if (entry->d_name[0] == '.' && path_prefix[0] != '.') {
-                    continue;
-                }
-                if (strncmp(entry->d_name, path_prefix, path_prefix_len) == 0) {
-                     char name[PATH_MAX];
-                     if (entry->d_type == DT_DIR) {
-                        snprintf(name, sizeof(name), "%s/", entry->d_name);
-                    } else {
-                        snprintf(name, sizeof(name), "%s", entry->d_name);
-                    }
-                    add_to_string_list(&matches, name);
-                }
-            }
-            closedir(directory);
-            prefix_len = path_prefix_len;
-        }
+            char *last_slash = strrchr(prefix, '/');
+            char *path_prefix = (last_slash != NULL) ? last_slash + 1 : prefix;
+            int path_prefix_len = strlen(path_prefix);
+            DIR *directory = NULL;
 
+            if (last_slash == NULL){
+                directory = opendir(".");
+
+            }
+            else{
+                int dir_len = (int)(last_slash - prefix);
+                char *dir_path = (dir_len == 0) ? strdup("/") : strndup(prefix, dir_len);
+                directory = opendir(dir_path);
+                free(dir_path);
+            }    
+            if (directory != NULL) {
+                struct dirent *entry;
+                while ((entry = readdir(directory)) != NULL) {
+                    if (entry->d_name[0] == '.' && path_prefix[0] != '.') {
+                        continue;
+                    }
+                    if (strncmp(entry->d_name, path_prefix, path_prefix_len) == 0) {
+                        char name[PATH_MAX];
+                        if (entry->d_type == DT_DIR) {
+                            snprintf(name, sizeof(name), "%s/", entry->d_name);
+                        } else {
+                            snprintf(name, sizeof(name), "%s", entry->d_name);
+                        }
+                        add_to_string_list(&matches, name);
+                    }
+                }
+                closedir(directory);
+                prefix_len = path_prefix_len;
+            }
+        }
     }
     rm_dup_string_list(&matches);
     fflush(stdout);
