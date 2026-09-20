@@ -82,6 +82,11 @@ static void handle_tab(char *buffer, int *len, char last_char){
     int prefix_len = strlen(prefix);
 
     if (last_space == NULL){
+        CompleteRegister *custom_complete = find_reg_complete(prefix);
+        if(custom_complete !=NULL){
+            char *args[] = {custom_complete->path, NULL};
+            check_and_run(args);
+        }
         //builtins
         for (int i = 0; builtin_table[i].name != NULL; i++) {
             if (strncmp(builtin_table[i].name, prefix, prefix_len) == 0) {
@@ -110,6 +115,7 @@ static void handle_tab(char *buffer, int *len, char last_char){
         }
     }
     else{
+        
         char *last_slash = strrchr(prefix, '/');
         char *path_prefix = (last_slash != NULL) ? last_slash + 1 : prefix;
         int path_prefix_len = strlen(path_prefix);
