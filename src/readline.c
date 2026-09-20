@@ -117,8 +117,8 @@ static void handle_tab(char *buffer, int *len, char last_char){
         if(custom_complete !=NULL){
             char *args[] = {custom_complete->path, NULL};
             check_and_run(args);
+            buffer[(*len)++] = ' ';
             printf(" ");
-            fflush(stdout);
         }
         else{
             char *last_slash = strrchr(prefix, '/');
